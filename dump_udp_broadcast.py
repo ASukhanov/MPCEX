@@ -61,7 +61,8 @@ for opt in sys.argv:
 		print('Dump enabled')
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind(('<broadcast>', port))
+#s.bind(('<broadcast>', port))
+s.bind(('255.255.255.255', port))
 rc =  s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, bufferSize)
 s.setblocking(0)
 

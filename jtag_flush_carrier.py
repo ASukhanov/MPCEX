@@ -1,7 +1,8 @@
 #!/usr/bin/python
 #Flush carrier board with the latest CARB_U1
 prefix = 'CARB_U1*.stp'
-action = 'Device_info'
+#action = 'Device_info'
+action = 'Program'
 
 import os
 import glob
@@ -34,7 +35,7 @@ wiringpi2.digitalWrite(select_gpio,0)
 
 cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(carrier_mask)
 
-print('gpio -g '+str(select_gpio)+' 0')
+print('gpio -g write '+str(select_gpio)+' 0')
 print('Executing: '+cmdline)
 p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 for line in p.stdout.readlines():
@@ -46,11 +47,11 @@ if wiringpi2.digitalRead(select_gpio) != 1 :
   print('ERROR JTAG path through FEM using GPIO pin ' + str(select_gpio) + ' was not established')
   print('Did you forget "gpio export '+ str(select_gpio) + ' out" after reboot?') 
   exit(1) 
-print('gpio -g '+str(select_gpio)+' 1')
+print('gpio -g write '+str(select_gpio)+' 1')
 
 newest = max(glob.iglob(prefix), key=os.path.getctime)
 
-cmdline = 'Play_stapl.py ' + splayer_option + ' -a' + action + ' ' + newest
+cmdline = 'StaplPlayer ' + splayer_option + ' -a' + action + ' ' + newest
 print('Executing: '+cmdline)
 p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 for line in p.stdout.readlines():
@@ -58,5 +59,5 @@ for line in p.stdout.readlines():
 retval = p.wait()
 
 wiringpi2.digitalWrite(select_gpio,0)
-print('gpio -g '+str(select_gpio)+' 0')
+print('gpio -g write '+str(select_gpio)+' 0')
 
