@@ -1,8 +1,9 @@
 #!/usr/bin/python
-#Flush carrier board with the latest CARB_U1
-prefix = 'CARB_U1*.stp'
-#action = 'Device_info'
-action = 'Program'
+#Flash carrier board with the latest CARB_U*.stp image
+file = 'CARB_U1*.stp'
+action = 'Device_info'
+#action = 'Program'
+#action = 'Verify'
 
 import os
 import glob
@@ -10,7 +11,8 @@ import sys
 import subprocess  
 
 if len(sys.argv) < 2:
-  print('No arguments')
+  print("Script to flash the latest CARB_U*.stp image into the carrier board's FPGA")
+  print('usage: '+sys.argv[0]+' [a/b][0:3] [U1/U2] [Program / Verify / Device_info / Read_idcode]')
   exit()
 
 import wiringpi2
@@ -25,6 +27,16 @@ if sys.argv[1][0] == 'b':
 elif sys.argv[1][0] != 'a':
   print('First letter should be a or b')
   exit()
+
+fpgas = ['U1','U2']
+if len(sys.argv) > 2: 
+  if sys.argv[2][:2] not in fpgas:
+    print('Second argument should be U1 or U2')
+    exit()
+  file = 'CARB_' + sys.argv[2] + '*.stp'
+
+if len(sys.argv) > 3:
+  action = sys.argv[3]
 
 carrier_mask = 1
 if len(sys.argv[1])>1:
@@ -49,7 +61,7 @@ if wiringpi2.digitalRead(select_gpio) != 1 :
   exit(1) 
 print('gpio -g write '+str(select_gpio)+' 1')
 
-newest = max(glob.iglob(prefix), key=os.path.getctime)
+newest = max(glob.iglob(file), key=os.path.getctime)
 
 cmdline = 'StaplPlayer ' + splayer_option + ' -a' + action + ' ' + newest
 print('Executing: '+cmdline)

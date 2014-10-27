@@ -1,3 +1,6 @@
+#!/bin/bash
+
+# Download configuration into all carrier boards connected to FEM
 
 gpio -g write 8 0
 Play_stapl.py i1c 1
