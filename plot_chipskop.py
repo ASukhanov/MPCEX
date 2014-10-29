@@ -24,8 +24,10 @@ import datetime
 import os
 import glob
 
+output_to_file = 1  
 valnum = 0
 values = list()
+
 for i in range(0,16+1):
         values.append(list())
 
@@ -51,9 +53,10 @@ def process_line(pline,split):
 	if split:
 	  #print(pline),
           if pline[0:6] != 'Export':
-                return
+            return
           line = pline.split('HEX ')[1]
-	  ofile.write(line)
+	  if(output_to_file):
+            ofile.write(line)
 	  pline = line
         value = pline.split()
         for i in range(0, len(value)):
@@ -65,6 +68,7 @@ def process_line(pline,split):
 	return
 
 if(len(sys.argv)>1):
+  output_to_file = 0
   newest = max(glob.iglob(sys.argv[1]), key=os.path.getctime)
   print('Opening '+newest)
   sfil = open(sys.argv[1],'r')
@@ -78,11 +82,9 @@ else:
   p = subprocess.Popen(line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for pline in p.stdout.readlines():
 	process_line(pline,1)
-
-if len(export_command)>0:
-  execute_user_command()
-
-print('Hex waveform is written to ' + ofname)
+  if len(export_command)>0:
+    execute_user_command()
+  print('Hex waveform is written to ' + ofname)
 
 fig = plt.figure(figsize=(16, 8))
 fig.suptitle(title,fontsize=12)
