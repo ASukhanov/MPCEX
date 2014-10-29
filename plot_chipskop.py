@@ -2,18 +2,17 @@
 
 # Logic analyzer display of the 'StaplPlayer -aTRANS chipskop.stp'
 # To plot from the FPGA locally: plot_chipskop
-# To plot the newest file ~/tmp/*.wpl: plot_chipskop ~/tmp/*.wpl 
+# To plot the newest file ~/tmp/*.wpl: plot_chipskop '~/tmp/csk_*.wpl' 
 # To transfer the waveplot to other host - modify the export_command variable
 
 import datetime 
 
 #ofname = '/run/shm/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
 ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
-ofile  = open(ofname,'w')
 
 # uncomment the following line and comment next line to plot locally
-#export_command = '' 
-export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
+export_command = '' 
+#export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
 
 import sys
 from matplotlib.widgets import Cursor
@@ -71,11 +70,12 @@ if(len(sys.argv)>1):
   output_to_file = 0
   newest = max(glob.iglob(sys.argv[1]), key=os.path.getctime)
   print('Opening '+newest)
-  sfil = open(sys.argv[1],'r')
-  title = sys.argv[1]
+  sfil = open(newest,'r')
+  title = newest
   for pline in sfil:
 	process_line(pline,0)
 else:
+  ofile  = open(ofname,'w')
   title = datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
   line = 'StaplPlayer -aTRANS chipskop.stp'
   print('Executing "'+line+'"');
