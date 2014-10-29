@@ -1,6 +1,19 @@
 #!/usr/bin/python
 
 # Logic analyzer display of the 'StaplPlayer -aTRANS chipskop.stp'
+# To plot from the FPGA locally: plot_chipskop
+# To plot the newest file ~/tmp/*.wpl: plot_chipskop ~/tmp/*.wpl 
+# To transfer the waveplot to other host - modify the export_command variable
+
+import datetime 
+
+#ofname = '/run/shm/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
+ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
+ofile  = open(ofname,'w')
+
+# uncomment the following line and comment next line to plot locally
+#export_command = '' 
+export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
 
 import sys
 from matplotlib.widgets import Cursor
@@ -8,15 +21,21 @@ from matplotlib.widgets import Cursor
 import matplotlib.pyplot as plt
 import subprocess
 import datetime
-
-#ofname = '/run/shm/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
-ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
-ofile  = open(ofname,'w')
+import os
+import glob
 
 valnum = 0
 values = list()
 for i in range(0,16+1):
         values.append(list())
+
+def execute_user_command():
+    print('Executing '+export_command)
+    p = subprocess.Popen(export_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in p.stdout.readlines():
+      print line,
+    retval = p.wait()
+    exit()
 
 def mybin(val): # convert integer to 16 binary digits
         rc = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
@@ -46,7 +65,8 @@ def process_line(pline,split):
 	return
 
 if(len(sys.argv)>1):
-  print('Opening '+sys.argv[1])
+  newest = max(glob.iglob(sys.argv[1]), key=os.path.getctime)
+  print('Opening '+newest)
   sfil = open(sys.argv[1],'r')
   title = sys.argv[1]
   for pline in sfil:
@@ -58,7 +78,12 @@ else:
   p = subprocess.Popen(line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for pline in p.stdout.readlines():
 	process_line(pline,1)
+
+if len(export_command)>0:
+  execute_user_command()
+
 print('Hex waveform is written to ' + ofname)
+
 fig = plt.figure(figsize=(16, 8))
 fig.suptitle(title,fontsize=12)
 fig.subplots_adjust(left=0.02)
