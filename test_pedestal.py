@@ -54,9 +54,9 @@ for line in p.stdout.readlines():
   print line,
 retval = p.wait()
 
-cmdline = 'Play_stapl.py i16 4ff00000 i20 0 i21 0 i10 50233' 
+cmdline = 'Play_stapl.py i10 50233' 
 cmdline += hex(carmask)[2:] + hex(12+master)[2:] +'0 '
-cmdline += 'i20 0 i21 0|./splayer_dump.py'
+cmdline += 'i16 4ff00000 i14 0 i20 0 i21 0 |./splayer_dump.py'
 print('Executing: '+cmdline)
 p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 for line in p.stdout.readlines():
