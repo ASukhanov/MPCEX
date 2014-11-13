@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # Download configuration into all carrier boards connected to FEM
 
+# Settings
+
 import os
 import glob
 import sys
@@ -51,7 +53,6 @@ wiringpi2.digitalWrite(select_gpio,0)
 
 for carrier in carrier_set:
 
-  #wiringpi2.digitalWrite(select_gpio,0)
   cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) + '|./splayer_dump.py' 
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -79,7 +80,10 @@ for carrier in carrier_set:
   #wiringpi2.digitalWrite(select_gpio,0)
 
   # Set in IR10: GTMLkl, CarBEn, MasterSel
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
+  # Option: Only one carrier board receives SDO 
+  #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
+  # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0' + '|./splayer_dump.py'
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
