@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Pedestal run
+# Calibrarion run, the same as pedestal but FM+CalSr is inserted into the sequence
 
 import os
 import glob
@@ -9,7 +9,7 @@ import subprocess
 if len(sys.argv) < 2:
   print("Calibration run on carrier boards FEM")
   print('Usage: '+sys.argv[0]+' a/b[Carriers]')
-  print('Examle to run calibartion on FEM a, carriers 0,2,3, master carrier 2:')
+  print('Example to run calibartion on FEM a, carriers 0,2,3, master carrier 2:')
   print(sys.argv[0]+' a203')
   exit()
 

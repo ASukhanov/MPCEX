@@ -34,6 +34,7 @@ if len(sys.argv) > 2:
     print('Second argument should be U1 or U2')
     exit()
   file = 'CARB_' + sys.argv[2] + '*.stp'
+  #print('Will search for '+file)
 
 if len(sys.argv) > 3:
   action = sys.argv[3]

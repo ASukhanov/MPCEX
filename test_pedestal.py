@@ -9,7 +9,7 @@ import subprocess
 if len(sys.argv) < 2:
   print("Test pedestals of the FEM")
   print('Usage: '+sys.argv[0]+' a/b[Carriers]')
-  print('Examle to read pedestals from FEM a, carriers 0,2,3, master carrier 2:')
+  print('Example to read pedestals from FEM a, carriers 0,2,3, master carrier 2:')
   print(sys.argv[0]+' a203')
   exit()
 
