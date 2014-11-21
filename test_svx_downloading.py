@@ -53,7 +53,7 @@ wiringpi2.digitalWrite(select_gpio,0)
 
 for carrier in carrier_set:
 
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) + '|./splayer_dump.py' 
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) 
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
@@ -69,7 +69,7 @@ for carrier in carrier_set:
   #  exit(1)
 
   # The Following JTAG action is executed on the carrier board
-  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches + '|./splayer_dump.py'
+  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
@@ -83,7 +83,7 @@ for carrier in carrier_set:
   # Option: Only one carrier board receives SDO 
   #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
   # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0' + '|./splayer_dump.py'
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0'
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():

@@ -27,7 +27,7 @@ carrier_set = [0,1,2,3]
 
 for carrier in carrier_set:
 
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) + '|./splayer_dump.py' 
+  cmdline = './Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) 
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
@@ -35,11 +35,12 @@ for carrier in carrier_set:
   retval = p.wait()
 
   # The Following JTAG action is executed on the carrier board
-  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + '140' + '|./splayer_dump.py'
+  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + '140'
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
   retval = p.wait()
-  
+
+  print('Note: To disable Gray-coding in FEM - set bit 0000_1000 in FEM.i10')  
 exit()

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+case "$1" in
+  start)
+    CMD="Play_stapl.py i10 500321c0 i16 aff00000 i20 0 i21 0 |./splayer_dump.py"
+    Play_stapl.py i10 500321c0 i16 aff00000 i20 0 i21 0 |./splayer_dump.py
+    ;;
+  on)
+    CMD="Play_stapl.py i16 aff00000 > /dev/null; Play_stapl.py -g i16 aff00000 > /dev/null"
+    Play_stapl.py i16 aff00000 > /dev/null; Play_stapl.py -g i16 aff00000 > /dev/null
+    ;;
+  off)
+    CMD="Play_stapl.py i16 0 > /dev/null; Play_stapl.py -g i16 0 > /dev/null"
+    Play_stapl.py i16 0 > /dev/null; Play_stapl.py -g i16 0 > /dev/null
+    ;;
+  1)
+    CMD="Play_stapl.py i16 cff00000 > /dev/null; Play_stapl.py -g i16 cff00000 > /dev/null"
+    Play_stapl.py i16 cff00000 > /dev/null; Play_stapl.py -g i16 cff00000 > /dev/null
+    ;;
+  *)
+    echo "Usage: $0 on/off/1/start"
+    exit
+    ;;
+esac
+# nice 'method' does not work
+#$CMD
+echo "Executed: $CMD"
+
+
+
+
