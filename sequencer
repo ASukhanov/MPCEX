@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Setup the sequencer for different types of run
 
 case "$1" in
