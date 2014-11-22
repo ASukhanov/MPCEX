@@ -16,3 +16,8 @@ CMD="StaplPlayer $SP_OPTION $ACTION $SFILE"
 echo "Executing $CMD"
 $CMD
 
+if [ $ACTION == "-aProgram" ]; then
+  #set default FEM ID
+  echo "Setting default FEM ID=77: Play_stapl.py $SP_OPTION i23 77"
+  Play_stapl.py $SP_OPTION i23 77
+fi
