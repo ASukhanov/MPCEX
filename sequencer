@@ -23,7 +23,10 @@ case "$1" in
     exit
 esac
 
-echo "Executing $CMD"
+CMD_FEM_b="$CMD -g"
 
-#$CMD |./splayer_dump.py
-$CMD > /dev/null
+echo "Executing $CMD"
+$CMD |./splayer_dump.py
+
+echo "Executing $CMD_FEM_b"
+$CMD_FEM_b |./splayer_dump.py
