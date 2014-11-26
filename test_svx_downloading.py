@@ -2,6 +2,8 @@
 # Download configuration into all carrier boards connected to FEM
 
 # Settings
+svxfile = 'svxall_gain_high_drive_high.stp'
+
 
 import os
 import glob
@@ -91,7 +93,7 @@ for carrier in carrier_set:
   retval = p.wait()
 
 
-  cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans svxall.stp'
+  cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans ' + svxfile
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
