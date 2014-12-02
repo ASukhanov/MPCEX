@@ -109,7 +109,8 @@ while True:
 	print('...'),
 	for ii in range(4):
 		print(hex(ev_trl[ii]).split('0x')[1].zfill(4)),
-	print(' LPar='+hex(lParity(msg)))
+	print('LPar='+hex(lParity(msg))),
+	print('L='+str(msglen))
 	if dump_enabled:
 		print(dump(msg))
 	if sfil and not sfil.closed:
