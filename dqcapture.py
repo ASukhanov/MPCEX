@@ -102,8 +102,8 @@ while True:
 	if msglen < 100:
 		print('ERROR short event '+str(msglen))
 		continue
-	ev_hdr = struct.unpack_from('>HHHHHHHHHHHH',msg,ev_offset*2)
-	for ii in range(12):
+	ev_hdr = struct.unpack_from('>HHHHHHHHHHHHHHHHHHHHHH',msg,ev_offset*2)
+	for ii in range(22):
 		print(hex(ev_hdr[ii]).split('0x')[1].zfill(4)),
 	ev_trl = struct.unpack_from('>HHHH',msg[-8:])
 	print('...'),
