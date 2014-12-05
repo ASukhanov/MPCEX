@@ -46,8 +46,14 @@ CMD="$IRSCAN $DRSCAN"
 
 #CMD_FEM_b="$CMD -g"
 
-echo "Executing $CMD"
-$CMD |./splayer_dump.py
+echo "Executing: $CMD"
+#$CMD |./splayer_dump.py
+$CMD >/dev/null
 
-#echo "Executing $CMD_FEM_b"
+#echo "Executing: $CMD_FEM_b"
 #$CMD_FEM_b |./splayer_dump.py
+
+#Start sequencer without data output
+CMD="$IRSCAN 2FF00000"
+#echo "Executing: $CMD"
+#$CMD |./splayer_dump.py

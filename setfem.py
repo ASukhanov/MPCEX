@@ -7,9 +7,12 @@ csr31_12='50032'        # default bits 31:12
 import sys
 import subprocess
 
+def print_usage():
+  print('Usage: '+sys.argv[0]+' a/b[Carriers] trig/ped')
+
 if len(sys.argv) < 2:
   print("Setup the FEM")
-  print('Usage: '+sys.argv[0]+' a/b[Carriers] [trig]')
+  print_usage()
   print('Example for FEM a: carriers 0,2,3, master carrier 2, external trigger:')
   print(sys.argv[0]+' a203 trig```')
   exit()
@@ -28,9 +31,14 @@ if len(sys.argv[1])<2:
   exit()
 
 trig_source=0
-# any third argument means external trigger
-if len(sys.argv) == 2:
-  trig_source = 0xC
+if len(sys.argv) > 2:
+        if sys.argv[2] == 'trig':
+          trig_source = 0x0
+        elif sys.argv[2] == 'ped':
+          trig_source = 0xC
+        else:
+          print_usage()
+          exit()
 
 master = int(sys.argv[1][1])
 carmask = 0
