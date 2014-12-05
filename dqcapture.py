@@ -18,9 +18,13 @@ sfil = None
 run_started = -1
 bytesin = 0.
 rc = 0
+events=0
+prevev=0
 writing_enabled = False
 dump_enabled = False
 dump_trailer = True
+nerrlen=0
+prevlen=0
 
 # hex dump
 #FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
@@ -50,7 +54,7 @@ def lParity(src):
 		#	print(hex(lpar))
 		#	ii -=1	
 	return lpar
-
+quiet = 0
 #print(str(sys.argv))
 for opt in sys.argv:
 	if opt == '-w':
@@ -59,6 +63,8 @@ for opt in sys.argv:
 	if opt == '-d':
 		dump_enabled = True
 		print('Dump enabled')
+	if opt == '-q':
+		quiet = 1;
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #s.bind(('<broadcast>', port))
@@ -69,7 +75,12 @@ s.setblocking(0)
 while True:
 	result = select.select([s],[],[])
 	msg = result[0][0].recv(bufferSize)
+	events +=1;
 	msglen = len(msg)
+	if msglen != prevlen:
+		if prevlen >0:
+			nerrlen +=1;
+	prevlen = msglen
 	bytesin += msglen
 	if run_started == -1:
 		run_started = 0
@@ -102,14 +113,16 @@ while True:
 	if msglen < 100:
 		print('ERROR short event '+str(msglen))
 		continue
-	ev_hdr = struct.unpack_from('>HHHHHHHHHHHH',msg,ev_offset*2)
-	for ii in range(12):
-		print(hex(ev_hdr[ii]).split('0x')[1].zfill(4)),
-	ev_trl = struct.unpack_from('>HHHH',msg[-8:])
-	print('...'),
-	for ii in range(4):
-		print(hex(ev_trl[ii]).split('0x')[1].zfill(4)),
-	print(' LPar='+hex(lParity(msg)))
+	if quiet == 0:
+		ev_hdr = struct.unpack_from('>HHHHHHHHHHHHHHHHHHHHHH',msg,ev_offset*2)
+		for ii in range(22):
+			print(hex(ev_hdr[ii]).split('0x')[1].zfill(4)),
+		ev_trl = struct.unpack_from('>HHHH',msg[-8:])
+		print('...'),
+		for ii in range(4):
+			print(hex(ev_trl[ii]).split('0x')[1].zfill(4)),
+		print('LPar='+hex(lParity(msg))),
+		print('L='+str(msglen))
 	if dump_enabled:
 		print(dump(msg))
 	if sfil and not sfil.closed:
@@ -120,6 +133,7 @@ while True:
 	else:
 		bytesout = 0.
 	if difftime/10 != olddifftime/10:
-		txtout = str(difftime)+'s: evLen='+str(msglen)+', bytes in: '+str(bytesin) + ', out: '+str(bytesout)+'kB'
+		txtout = str(difftime)+'s: '+str((events-prevev)/10)+'ev/s, evLen='+str(msglen)+' nErrLen='+str(nerrlen)+', bytes in: '+str(bytesin) + ', out: '+str(bytesout)+'kB '
+		prevev = events
 		print(txtout)
 	olddifftime = difftime
