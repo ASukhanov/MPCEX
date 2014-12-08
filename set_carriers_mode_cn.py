@@ -42,5 +42,5 @@ for carrier in carrier_set:
     print line,
   retval = p.wait()
 
-  print('Note: To disable Gray-coding in FEM - set bit 0000_1000 in FEM.i10')  
+  #print('Note: To disable Gray-coding in FEM - set bit 0000_1000 in FEM.i10')  
 exit()

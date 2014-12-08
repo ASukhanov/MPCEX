@@ -46,7 +46,7 @@ if (work_with_carrier != 0):	# set route to carrier board
   if (splayer_option == '-g'):
      work_with_carrier = 7	# GPIO for the carrier select[1] line in RPiLVDS board
   wiringpi2.pinMode(work_with_carrier,1)
-  print('Executing wiringpi2.digitalWrite('+str(work_with_carrier)+',1)')
+  #print('Executing wiringpi2.digitalWrite('+str(work_with_carrier)+',1)')
   wiringpi2.digitalWrite(work_with_carrier,1)
   if wiringpi2.digitalRead(work_with_carrier) != 1 :
     print('ERROR JTAG path through FEM using GPIO pin ' + str(work_with_carrier) + ' was not established')
@@ -70,7 +70,7 @@ for line in p.stdout.readlines():
 retval = p.wait()
 
 if (work_with_carrier != 0):
-  print('Executing wiringpi2.digitalWrite('+str(work_with_carrier)+',0)')
+  #print('Executing wiringpi2.digitalWrite('+str(work_with_carrier)+',0)')
   wiringpi2.digitalWrite(work_with_carrier,0)
   if wiringpi2.digitalRead(work_with_carrier) != 0 :
     print('ERROR JTAG path through FEM using GPIO pin ' + str(work_with_carrier) + ' was not closed')

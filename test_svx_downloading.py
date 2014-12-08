@@ -2,7 +2,9 @@
 # Download configuration into all carrier boards connected to FEM
 
 # Settings
-svxfile = 'svxall_gain_high_drive_max.stp'
+#svxfile = 'svxall_gain_high_drive_max.stp'
+svxfile = 'svxall_gain_high_drive_low.stp'
+#svxfile = 'svxall_gain_high_drive_low_noFCLC.stp'
 
 import os
 import glob
