@@ -40,17 +40,9 @@ if len(sys.argv)>2:
      switch_mask |= 1<<int(b) 
 switches = hex(0x100+switch_mask)[2:]
 
-# Setup the JTAG path through FEM to carrier board
+# Reset the JTAG path to access FEM
 print('gpio -g write '+str(select_gpio)+' 0')
 wiringpi2.digitalWrite(select_gpio,0)
-
-# Init all carrier boards, not actually necessary
-#cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10000000 100004 0'
-#print('Executing: '+cmdline)
-#p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-#for line in p.stdout.readlines():
-#  print line,
-#retval = p.wait()
 
 for carrier in carrier_set:
 
@@ -61,15 +53,7 @@ for carrier in carrier_set:
     print line,
   retval = p.wait()
 
-  # switch JTAG path to carrier board 
-  #print('gpio -g write '+str(select_gpio)+' 1')
-  #wiringpi2.digitalWrite(select_gpio,1)
-  #if wiringpi2.digitalRead(select_gpio) != 1 :
-  #  print('ERROR JTAG path through the FEM using GPIO pin ' + str(select_gpio) + ' was not established')
-  #  print('Did you forget "gpio export '+ str(select_gpio) + ' out" after reboot?')
-  #  exit(1)
-
-  # The Following JTAG action is executed on the carrier board
+  # If -c option in Play_stapl is specified, then the JTAG action will be  executed on the carrier board
   cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -77,20 +61,18 @@ for carrier in carrier_set:
     print line,
   retval = p.wait()
   
-  #print('gpio -g write '+str(select_gpio)+' 0')
-  #wiringpi2.digitalWrite(select_gpio,0)
-
+  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   # Set in IR10: GTMLkl, CarBEn, MasterSel
   # Option: Only one carrier board receives SDO 
-  #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
   # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0'
+  #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0'
+  #---------------------------------------
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
   retval = p.wait()
-
 
   cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans ' + svxfile
   print('Executing: '+cmdline)
