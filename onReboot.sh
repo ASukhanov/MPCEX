@@ -11,7 +11,7 @@ gpio -g mode 7 out
 gpio -g write 7 0
 
 
-# Assing FEM IDs, they should be different for all FEMs at PHENIX
+# Assing FEM IDs, they should be different for all FEMs at PHENIX.
 
 # assign FEM ID for FEMa
 Play_stapl.py i23 10
