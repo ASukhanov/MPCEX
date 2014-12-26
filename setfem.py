@@ -4,13 +4,14 @@ csr=0x50032000        # default CSR
 # for details see MPCEX FEM User Guide:
 # https://docs.google.com/document/d/1Af5qRmYUNsfU-TkVpd8vJxEkcIqnKi_7xnJf8nlslEY/edit#heading=h.bjsg1osbwivb
 #
-version='v2'
+version='v3'
+# Modifications: 'trigint' instead of 'ped'
 
 import sys
 import subprocess
 
 def print_usage():
-  print('Usage: '+sys.argv[0]+' a/b[Carriers] [trig/ped] [-gray] [cbtest] [femtest]')
+  print('Usage: '+sys.argv[0]+' a/b[Carriers] [trigext/trigint] [-gray] [cbtest] [femtest] [beamclk]')
 
 if len(sys.argv) < 2:
   print('Setup the FEM. Version '+version)
@@ -35,9 +36,9 @@ if len(sys.argv[1])<2:
 trig_source=0
 
 for s in sys.argv[2:]:
-        if s == 'trig':
+        if s == 'trigext':
           csr |= 0x00000000
-        elif s == 'ped':
+        elif s == 'trigint':
           csr |= 0x000000C0
 	elif s == '-gray':
           csr |= 0x00001000 # disable Gray decoding
@@ -45,6 +46,8 @@ for s in sys.argv[2:]:
           csr |= 0x00100000 # force all chains into simulation mode by setting BClk=1
         elif s == "femtest":
           csr |= 0x00100004 # FEM simulation mode
+        elif s == "beamclk":
+          csr |= 0x00000008 # Work from the beam clock
         else:
           print('Unknown argument: '+s)
           print_usage()

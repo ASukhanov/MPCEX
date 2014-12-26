@@ -1,0 +1,5 @@
+#!/bin/bash
+# Dump 1K words from the shadow FIFO
+
+StaplPlayer -atrans dump_rbfifo-1k.stp |./splayer_dump.py
+
