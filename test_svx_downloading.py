@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # Download configuration into all carrier boards connected to FEM
+# 2014-12-28	Version 2. i10[7:6] are set, this is internal trigger selection.
 
 # Settings
 #svxfile = 'svxall_gain_high_drive_max.stp'
@@ -66,9 +67,9 @@ for carrier in carrier_set:
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   # Set in IR10: GTMLkl, CarBEn, MasterSel
   # Option: Only one carrier board receives SDO 
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + str(carrier) + '0' + '|./splayer_dump.py' 
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + hex(carrier+12)[2:] + '0' + '|./splayer_dump.py' 
   # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
-  #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + str(carrier) + '0'
+  #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + hex(carrier+12)[2:] + '0'
   #---------------------------------------
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
