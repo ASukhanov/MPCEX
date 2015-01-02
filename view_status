@@ -1,0 +1,3 @@
+#!/bin/bash
+./Play_stapl.py i11 0 i12 0 i14 0 i17 0 i20 0 i21 0 |./splayer_dump.py
+
