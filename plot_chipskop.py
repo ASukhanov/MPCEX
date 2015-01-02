@@ -12,7 +12,8 @@ ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
 
 # uncomment the following line and comment next line to plot locally
 #export_command = '' 
-export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
+#export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
+export_command = 'scp '+ofname+' phnxrc@va069.phenix.bnl.gov:/tmp'
 
 import sys
 from matplotlib.widgets import Cursor
