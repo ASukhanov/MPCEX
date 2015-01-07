@@ -16,9 +16,9 @@ ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
 export_command = 'scp '+ofname+' phnxrc@va069.phenix.bnl.gov:/tmp'
 
 import sys
-from matplotlib.widgets import Cursor
-#import numpy as np
-import matplotlib.pyplot as plt
+#from matplotlib.widgets import Cursor
+##import numpy as np
+#import matplotlib.pyplot as plt
 import subprocess
 import datetime
 import os
