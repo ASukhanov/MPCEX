@@ -4,7 +4,10 @@
 
 # Setup sequencer
 IRSCAN="Play_stapl.py $SP_OPTION i16 "
-DRSCAN="00000020 00110800 002000E0 00320020"
+# with periodic PARst# DRSCAN="00000020 00110800 002000E0 00320020"
+# only continuous FEClk:w
+DRSCAN="00000020 00110800 00220020"
+
 # on FEM a
 CMD="$IRSCAN $DRSCAN"
 echo "Executing: $CMD"
@@ -15,8 +18,8 @@ echo "Executing: $CMD"
 $CMD >/dev/null
 
 # Setup FEMs
-# FEMTEST mode
-CSR10="50133f04"
+# Default is BClk and no tests
+CSR10="50000f08"
 # on FEM a
 CMD="Play_stapl.py i10 $CSR10"
 echo "Executing: $CMD"
