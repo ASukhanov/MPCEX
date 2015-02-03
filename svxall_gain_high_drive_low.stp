@@ -73,5 +73,20 @@ DRSCAN 32, $1ff00000, CAPTURE irdata[31..0];
 ' One shot
 DRSCAN 32, $4ff00000, CAPTURE irdata[31..0];
 PRINT "CalStrobe fired";
+
+' Rewrite sequencer with the standard sequence
+' FEClk, 0x800 times, PARst
+IRSCAN 8, $16, CAPTURE irdata[7..0];
+DRSCAN 32, $1ff00000, CAPTURE irdata[31..0];
+DRSCAN 32, $00000020, CAPTURE irdata[31..0];
+DRSCAN 32, $00110800, CAPTURE irdata[31..0];
+DRSCAN 32, $002000E0, CAPTURE irdata[31..0];
+DRSCAN 32, $00320020, CAPTURE irdata[31..0];
+DRSCAN 32, $1ff00000, CAPTURE irdata[31..0];
+
+' Set FEM into the standard configuration
+IRSCAN 8, $10, CAPTURE irdata[7..0];
+DRSCAN 32, $50000F08, CAPTURE irdata[31..0];
+
 ENDPROC;
 

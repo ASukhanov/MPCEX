@@ -27,7 +27,7 @@ carrier_set = [0,1,2,3]
 
 for carrier in carrier_set:
 
-  cmdline = './Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) 
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) 
   print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
