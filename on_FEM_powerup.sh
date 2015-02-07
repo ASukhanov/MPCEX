@@ -3,9 +3,9 @@
 # Should be executed after onReboot.sh
 
 # Setup sequencer
-IRSCAN="Play_stapl.py $SP_OPTION i16 "
+IRSCAN="Play_stapl.py $SP_OPTION i10 10000000 i16 "
 # with periodic PARst: 
-DRSCAN="00000020 00110800 002000E0 00320020"
+DRSCAN="1FF00000 00000020 00110800 002000E0 00320020 00400000 1FF00000"
 # only continuous FEClk:w
 #DRSCAN="00000020 00110800 00220020"
 
@@ -31,11 +31,11 @@ echo "Executing: $CMD"
 $CMD >/dev/null
 
 # Start sequencer
-# on FEM a
-CMD="Play_stapl.py i16 aff00000"
-echo "Executing: $CMD"
-$CMD >/dev/null
-# on FEM b
-CMD="Play_stapl.py i16 aff00000 -g"
-echo "Executing: $CMD"
-$CMD >/dev/null
+## on FEM a
+#CMD="Play_stapl.py i16 aff00000"
+#echo "Executing: $CMD"
+#$CMD >/dev/null
+## on FEM b
+#CMD="Play_stapl.py i16 aff00000 -g"
+#echo "Executing: $CMD"
+#$CMD >/dev/null
