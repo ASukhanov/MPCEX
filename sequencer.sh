@@ -31,8 +31,10 @@ case "$2" in
 #                          FM       R2       FM+PARst FM       R8       FM       FM       R3       FM+L1    FM       R800     FM+EOL
     ;;
   trig) # For external trigger
-    DRSCAN="1FF00000 00000020 00110800 002000E0 00320020 00400000 1FF00000"
-#                          FM       R800     FM+PARst FM+EOL
+#    DRSCAN="1FF00000 00000020 00110800 002000E0 00320020 00400000 1FF00000"
+#                          FM     R800 FM+PARst   FM+EOL
+#   no PArst sequence:
+    DRSCAN="1FF00000 00000020 00110800 00200020 00320020 00400000 1FF00000"
     ;;
   svx) # For downloading SVXs
     DRSCAN="1FF00000 00000020 0012000 00300000 1FF00000"
