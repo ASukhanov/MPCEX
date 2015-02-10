@@ -44,21 +44,21 @@ if len(sys.argv)>2:
 switches = hex(0x100+switch_mask)[2:]
 
 # Reset the JTAG path to access FEM
-print('gpio -g write '+str(select_gpio)+' 0')
+#log#print('gpio -g write '+str(select_gpio)+' 0')
 wiringpi2.digitalWrite(select_gpio,0)
 
 for carrier in carrier_set:
 
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) 
-  print('Executing: '+cmdline)
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i1c ' + str(1<<carrier) + ' > /dev/null' 
+  #log#print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
   retval = p.wait()
 
   # If -c option in Play_stapl is specified, then the JTAG action will be  executed on the carrier board
-  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches
-  print('Executing: '+cmdline)
+  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches + ' > /dev/null'
+  #log#print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
@@ -67,18 +67,18 @@ for carrier in carrier_set:
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   # Set in IR10: GTMLkl, CarBEn, MasterSel
   # Option: Only one carrier board receives SDO 
-  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + hex(carrier+12)[2:] + '0' + '|./splayer_dump.py' 
+  cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + str(1<<carrier) + hex(carrier+12)[2:] + '0' + ' > /dev/null' 
   # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
   #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + hex(carrier+12)[2:] + '0'
   #---------------------------------------
-  print('Executing: '+cmdline)
+  #log#print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
   retval = p.wait()
 
-  cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans ' + svxfile
-  print('Executing: '+cmdline)
+  cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans ' + svxfile 
+  #log#print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,

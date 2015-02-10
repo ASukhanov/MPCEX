@@ -62,6 +62,7 @@ if wiringpi2.digitalRead(select_gpio) != 1 :
   exit(1) 
 print('gpio -g write '+str(select_gpio)+' 1')
 
+file = '/phenixhome/phnxrc/MPCEX/'+file
 newest = max(glob.iglob(file), key=os.path.getctime)
 
 cmdline = 'StaplPlayer ' + splayer_option + ' -a' + action + ' ' + newest
