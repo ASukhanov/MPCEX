@@ -27,11 +27,11 @@ Play_stapl.py i10 50011fc0 i16 aff00000
 ./view_status.sh
 # sequencer is stopped and clock source is safely set by now
 ./sequencer.sh $1 trig > /dev/null
-#setup carriers
-Play_stapl.py $SP_OPTION i1c 1; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTION i1c 2; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTION i1c 4; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTIONi1c 8; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#setup carriers to CN (channel number) mode
+#Play_stapl.py $SP_OPTION i1c 1; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 2; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 4; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 8; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
 # set required clock and other CSR10 setting 
 # and start sequencer
 Play_stapl.py $SP_OPTION i10 5$CSR10 i16 aff00000 i1e 10 00 > /dev/null
