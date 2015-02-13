@@ -27,11 +27,7 @@ Play_stapl.py i10 50011fc8 i16 aff00000
 ./view_status.sh
 # sequencer is stopped and clock source is safely set by now
 ./sequencer.sh $1 trig > /dev/null
-<<<<<<< HEAD
-#setup carriers
-=======
 #setup carriers to CN (channel number) mode
->>>>>>> a071f3ae94f8cf99a49c7752b0b181fc0267410a
 #Play_stapl.py $SP_OPTION i1c 1; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
 #Play_stapl.py $SP_OPTION i1c 2; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
 #Play_stapl.py $SP_OPTION i1c 4; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
@@ -44,4 +40,4 @@ Play_stapl.py $SP_OPTION i10 7$CSR10 > /dev/null
 ./view_status.sh
 echo "to dump: ./dump_event.sh"
 echo "to chipskop: ./plot_chipskop.pl"
-echo "for another one shot: Play_stapl.py i10 5$CSR10 7$CSR10 > /dev/null; ./view_status.sh"
+echo "for another one shot: Play_stapl.py $SP_OPTION i10 5$CSR10 7$CSR10 > /dev/null; ./view_status.sh"
