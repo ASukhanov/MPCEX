@@ -17,7 +17,9 @@ case "$1" in
     exit
 esac
 
-CSR10=16#50000FC8
+#CSR10=16#500001C8: only CB0, bclk 
+CSR10=16#500001C8
+
   case "$3" in
   bclk)
     CSR10=$((CSR10|0x00000008))
@@ -28,7 +30,7 @@ CSR10=16#50000FC8
   esac
 HEXNUM=`printf "%08x\n" $((CSR10))`
 
-#echo "Executing: Play_stapl.py $SP_OPTION i10 $HEXNUM i16 1ff00000 000000$1 001200$1 00200000 1ff00000 aff00000"
+echo "Executing: Play_stapl.py $SP_OPTION i10 $HEXNUM i16 1ff00000 000000$1 001200$1 00200000 1ff00000 aff00000"
 echo "sequencer:"
 Play_stapl.py $SP_OPTION i10 $HEXNUM i16 1ff00000 000000$2 001200$2 00200000 1ff00000 aff00000 |./splayer_dump.py
 echo "carrier board:"

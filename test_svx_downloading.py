@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # Download configuration into all carrier boards connected to FEM
 # 2014-12-28	Version 2. i10[7:6] are set, this is internal trigger selection.
+# 2014-02-14	Version 3. Drop bit8 in CSR30 at the end of svx downloading to disable unwanted configuration change 
 
 # Settings
 #svxfile = 'svxall_gain_high_drive_max.stp'
@@ -58,7 +59,7 @@ for carrier in carrier_set:
 
   # If -c option in Play_stapl is specified, then the JTAG action will be  executed on the carrier board
   cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 ' + switches + ' > /dev/null'
-  #log#print('Executing: '+cmdline)
+  print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
@@ -71,14 +72,21 @@ for carrier in carrier_set:
   # Option: All carriers receives SDO signals, good for carriers which needs the U2-U1 tunnels
   #cmdline = 'Play_stapl.py ' + splayer_option + ' i10 10' + 'f' + hex(carrier+12)[2:] + '0'
   #---------------------------------------
-  #log#print('Executing: '+cmdline)
+  print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,
   retval = p.wait()
 
   cmdline = 'StaplPlayer ' + splayer_option + ' -aTrans ' + svxfile 
-  #log#print('Executing: '+cmdline)
+  print('Executing: '+cmdline)
+  p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  for line in p.stdout.readlines():
+    print line,
+  retval = p.wait()
+
+  cmdline = 'Play_stapl.py ' + splayer_option + ' -c i30 0  > /dev/null'
+  print('Executing: '+cmdline)
   p = subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for line in p.stdout.readlines():
     print line,

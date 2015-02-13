@@ -8,42 +8,42 @@ case "$1" in
   "b")
     echo "Setting carriers on FEMb"
     Play_stapl.py -g i1c 1 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 2 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 4 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 8 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     ;;
   "a")
     echo "Setting carriers on FEMa"
     Play_stapl.py i1c 1 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 2 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 4 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 8 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     ;;
   *)
     echo "Setting carriers on FEMa and FEMb"
     Play_stapl.py i1c 1 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 2 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 4 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py i1c 8 > /dev/null
-    Play_stapl.py -c i30 10140 40 > /dev/null
+    Play_stapl.py -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 1 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 2 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 4 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
     Play_stapl.py -g i1c 8 > /dev/null
-    Play_stapl.py -g -c i30 10140 40 > /dev/null
+    Play_stapl.py -g -c i30 10100 00 > /dev/null
 esac
 

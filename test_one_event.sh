@@ -19,7 +19,7 @@ esac
 #default CSR10:
 CSR10=0011fc8
 # Set to system clock, stop sequencer, this is very important!
-Play_stapl.py i10 50011fc0 i16 aff00000
+Play_stapl.py i10 50011fc8 i16 aff00000
 # download SVXs on all carriers
 ./test_svx_downloading.py $1
 ./send_calstrobe_to_carriers.sh $1 > /dev/null
@@ -28,10 +28,10 @@ Play_stapl.py i10 50011fc0 i16 aff00000
 # sequencer is stopped and clock source is safely set by now
 ./sequencer.sh $1 trig > /dev/null
 #setup carriers
-Play_stapl.py $SP_OPTION i1c 1; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTION i1c 2; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTION i1c 4; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
-Play_stapl.py $SP_OPTIONi1c 8; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 1; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 2; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 4; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
+#Play_stapl.py $SP_OPTION i1c 8; Play_stapl.py $SP_OPTION -c i30 10140 0140 > /dev/null
 # set required clock and other CSR10 setting 
 # and start sequencer
 Play_stapl.py $SP_OPTION i10 5$CSR10 i16 aff00000 i1e 10 00 > /dev/null
