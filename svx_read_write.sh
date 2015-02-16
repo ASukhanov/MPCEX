@@ -1,7 +1,9 @@
 #!/bin/bash
 # Shifts in/out the configuration stream into SVX chain
 # It assumes that svx_conf_enable.sh/.shsvx_conf_disable.sh scrips are executed before/after
-USAGE="usage: $0 [a/b]"
+# Version 2 2015-02-16 removed svx_conf_enable.sh/svx_conf_disable.sh
+#
+USAGE="usage: $0 a/b/0/1/2/3"
 SP_OPTION=""
 # CSR10[03:00]: BClk:08
 CSR10_bits_03_00=0
@@ -29,7 +31,7 @@ case "$1" in
     SP_OPTION=""
     CSR10_bits_11_04="1C"
     ;;
-  "a1")
+  "a1")Play_stapl.py i1c 1
     SP_OPTION=""
     CSR10_bits_11_04="2D"
     ;;
@@ -45,12 +47,7 @@ case "$1" in
     echo $USAGE
     exit
 esac
-
-# setup carriers
-#CMD="./svx_conf_enable.sh $SP_OPTION"
-#echo "Executing: $CMD"
-#echo "Executing: $CMD" >> $LOG
-#$CMD >> $LOG
+echo "Note: Make sure ./svx_conf_enable.sh have been executed"
 
 # setup FEM
 CMD="Play_stapl.py $SP_OPTION i10 00010$CSR10_bits_11_04$CSR10_bits_03_00"
@@ -58,19 +55,11 @@ echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
 $CMD >> $LOG
 
-# Download/readback of the configuration register
+# Download/readback of the SVX configuration registers
 CMD="StaplPlayer $SP_OPTION -aTrans svxall_gain_high_drive_low.stp"
 echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
 $CMD
 # >> $LOG
-
-# Disable SVX configuration
-#CMD="svx_conf_disable.sh $SP_OPTION"
-# do it quick way, by toggling BClkOff:
-#svx_conf_disable.shCMD="Play_stapl.py $SP_OPTION i10 50110$CSR10_bits_11_04$CSR10_bits_03_00 00010$CSR10_bits_11_04$CSR10_bits_03_00 i1c 0"
-#echo "Executing: $CMD"
-#echo "Executing: $CMD" >> $LOG
-#$CMD >> $LOG
-echo "Do not forget to ./svx_conf_disable.sh when you are done"
+echo "Note: Do not forget to execute ./svx_conf_disable.sh when you are done"
 echo "_______________________________ $HOSTNAME _________________________________" >> $LOG

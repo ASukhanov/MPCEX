@@ -26,10 +26,10 @@ CSR10=0011fc8
 ./svx_conf_disable.sh $1
 #Play_stapl.py $SP_OPTION i10 5$CSR10 > /dev/null
 ./view_status.sh $1
-# sequencer is stopped and clock source is safely set by now
+# sequencer is stopped, clock is internal, it is safe to setup sequencer for normal running
 ./sequencer.sh $1 trig > /dev/null
-# set carriers into channel number mode
-./set_carriers_mode_cn.sh $1
+# set carriers into channel number mode, that can be done at any time (when sequencer is off)
+#./set_carriers_mode_cn.sh $1
 # set required clock and other CSR10 setting 
 # and start sequencer
 Play_stapl.py $SP_OPTION i10 5$CSR10 i16 aff00000 i1e 10 00 > /dev/null
