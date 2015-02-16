@@ -1,11 +1,14 @@
 #!/bin/bash
 # Stop sequencers on FEMs
+LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
+
+CMD="Play_stapl.py i16 1ff00000"
+echo "$HOSTNAME: Executing $CMD on FEM a and b"
+echo "$HOSTNAME: Executing $CMD on FEM a and b" >> $LOG
 
 # FEMa
-Play_stapl.py i16 1ff00000 > /dev/null
-#Play_stapl.py i10 50010FC0 > /dev/null
+$CMD
 
 # FEMb
-Play_stapl.py -g i16 1ff00000 > /dev/null
-#Play_stapl.py i10 50010FC0 -g > /dev/null
+$CMD -g
 

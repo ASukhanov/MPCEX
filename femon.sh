@@ -1,8 +1,9 @@
 #!/bin/bash
 # Activate FEMs
+LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
 # Standard mode
-CSR10=16#50000F08
+CSR10=16#50002F08
 
 for arg in "$@"
 do
@@ -23,10 +24,12 @@ do
 done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
-echo Executing: Play_stapl.py i10 $HEXNUM i16 aff00000
+CMD="Play_stapl.py i10 $HEXNUM i16 aff00000"
+echo "$HOSTNAME: Executing $CMD on FEM a and b"
+echo "$HOSTNAME: Executing $CMD on FEM a and b" >> $LOG
 
 # Setup FEM and start sequencer on FEMa
-Play_stapl.py i10 $HEXNUM i16 aff00000 > /dev/null
+$CMD > /dev/null
 
 # and on FEMb
-Play_stapl.py i10 $HEXNUM i16 aff00000 -g > /dev/null
+$CMD -g > /dev/null

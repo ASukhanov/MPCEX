@@ -22,7 +22,7 @@ esac
 CMD="Play_stapl.py $SP_OPTION i10 000$CSR10_bits_19_00"
 echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
-$CMD >> $LOG
+$CMD > /dev/null
 # Download
 CMD="StaplPlayer $SP_OPTION -aTrans svxall_gain_high_drive_low.stp"
 echo "Executing: $CMD"
@@ -33,11 +33,12 @@ $CMD > /dev/null
 CMD="Play_stapl.py $SP_OPTION i16 1ff00000 40 00120000 00200000 1ff00000 4ff00000"
 echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
-$CMD >> $LOG
+$CMD > /dev/null
 echo "Calstrobe sent"
+echo "Calstrobe sent" >> $LOG
 # Reset carriers
 CMD="Play_stapl.py $SP_OPTION i10 501$CSR10_bits_19_00 000$CSR10_bits_19_00"
 echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
-$CMD >> $LOG
+$CMD > /dev/null
 echo "_______________________________ $HOSTNAME _________________________________" >> $LOG
