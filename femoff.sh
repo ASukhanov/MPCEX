@@ -7,8 +7,8 @@ echo "$HOSTNAME: Executing $CMD on FEM a and b"
 echo "$HOSTNAME: Executing $CMD on FEM a and b" >> $LOG
 
 # FEMa
-$CMD
+$CMD > /dev/null
 
 # FEMb
-$CMD -g
+$CMD -g > /dev/null
 
