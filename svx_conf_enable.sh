@@ -6,7 +6,7 @@ USAGE="usage: $0 a/b"
 #if [ "$#" -lt "1" ]; then echo $USAGE; exit; fi
 case "$1" in
   "b"|"-g")
-    echo "Enabling SVX configuration on b0,b1,b2.b3"
+    echo "$HOSTNAME.b: enabling SVX configuration"
     Play_stapl.py -g i1c 1 > /dev/null
     Play_stapl.py -g -c i30 100 > /dev/null
     Play_stapl.py -g i1c 2 > /dev/null
@@ -19,7 +19,7 @@ case "$1" in
     Play_stapl.py -g i1c 0 > /dev/null
     ;;
   *)
-    echo "Enabling SVX configuration on a0,a1,a2.a3"
+    echo "$HOSTNAME.a: enabling SVX configuration"
     Play_stapl.py i1c 1 > /dev/null
     Play_stapl.py -c i30 100 > /dev/null
     Play_stapl.py i1c 2 > /dev/null

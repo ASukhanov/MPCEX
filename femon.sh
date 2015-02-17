@@ -1,9 +1,10 @@
 #!/bin/bash
 # Activate FEMs
+# 2015-02-17	Version FEMr1-r13E
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
 # Standard mode
-CSR10=16#50002F08
+CSR10=16#50000F08
 
 for arg in "$@"
 do

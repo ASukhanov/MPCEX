@@ -6,7 +6,7 @@ USAGE="usage: $0 [a/b]"
 #if [ "$#" -lt "1" ]; then echo $USAGE; exit; fi
 case "$1" in
   "b")
-    echo "Setting ADC Mode on carriers b0,b1,b2,b3"
+    echo "$HOSTNAME.b: setting ADC Mode"
     Play_stapl.py -g i1c 1 > /dev/null
     Play_stapl.py -g -c i30 10140 000 > /dev/null
     Play_stapl.py -g i1c 2 > /dev/null
@@ -18,7 +18,7 @@ case "$1" in
     Play_stapl.py -g i1c 0 > /dev/null
     ;;
   *)
-    echo "Setting ADC Mode on carriers a0,a1,a2,a3"
+    echo "$HOSTNAME.a: setting ADC Mode"
     Play_stapl.py i1c 1 > /dev/null
     Play_stapl.py -c i30 10140 000 > /dev/null
     Play_stapl.py i1c 2 > /dev/null
