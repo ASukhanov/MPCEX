@@ -28,6 +28,17 @@ output_to_file = 1
 valnum = 0
 values = list()
 
+if(len(sys.argv)<2):
+  print('Usage: '+sys.argv[0]+' a/b [file]')
+  exit()
+
+splayer_option = ''
+if sys.argv[1] == 'b':
+    splayer_option = '-g'
+elif sys.argv[1] != 'a':
+    print('First argument should be a or b')
+    exit()
+
 for i in range(0,16+1):
         values.append(list())
 
@@ -67,9 +78,9 @@ def process_line(pline,split):
                         values[ii+1].append(str(float(binbits[ii])*.5+ii))
 	return
 
-if(len(sys.argv)>1):
+if(len(sys.argv)>2):
   output_to_file = 0
-  newest = max(glob.iglob(sys.argv[1]), key=os.path.getctime)
+  newest = max(glob.iglob(sys.argv[2]), key=os.path.getctime)
   print('Opening '+newest)
   sfil = open(newest,'r')
   title = newest
@@ -78,7 +89,7 @@ if(len(sys.argv)>1):
 else:
   ofile  = open(ofname,'w')
   title = datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
-  line = 'StaplPlayer -aTRANS chipskop.stp'
+  line = 'StaplPlayer '+splayer_option+' -aTRANS chipskop.stp'
   print('Executing "'+line+'"');
   p = subprocess.Popen(line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
   for pline in p.stdout.readlines():
