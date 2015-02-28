@@ -15,4 +15,4 @@ for pline in sys.stdin:
 		if ii%8 == 0:
 			print('')
 	except:
-		exit()
+		continue
