@@ -18,7 +18,6 @@ case "$1" in
     echo $USAGE
     exit
 esac
-echo 
 #default CSR10:
 CSR10=0011fc8
 # Set to system clock, stop sequencer, this is very important!
