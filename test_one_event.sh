@@ -7,15 +7,18 @@ if [ "$#" -lt "1" ]; then echo $USAGE; exit; fi
 
 case "$1" in
   "b")
+    echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $HOSTNAME.b ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
     SP_OPTION="-g"
     ;;
   "a")
+    echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $HOSTNAME.a ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
      SP_OPTION=""
     ;;
   *)
     echo $USAGE
     exit
 esac
+echo 
 #default CSR10:
 CSR10=0011fc8
 # Set to system clock, stop sequencer, this is very important!
@@ -39,3 +42,5 @@ Play_stapl.py $SP_OPTION i10 7$CSR10 > /dev/null
 echo "to dump: ./dump_event.sh $1"
 echo "to chipskop: ./plot_chipskop.pl"
 echo "for another one shot: Play_stapl.py $SP_OPTION i10 5$CSR10 7$CSR10 > /dev/null; ./view_status.sh $1"
+echo "___________________________________________________________________________"
+
