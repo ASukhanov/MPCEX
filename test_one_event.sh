@@ -36,7 +36,11 @@ CSR10=0011fc8
 # and start sequencer
 Play_stapl.py $SP_OPTION i10 5$CSR10 i16 aff00000 i1e 10 00 > /dev/null
 # sequencer started, ready for one shot
-Play_stapl.py $SP_OPTION i10 7$CSR10 > /dev/null
+CMD="Play_stapl.py $SP_OPTION i10 5$CSR10 7$CSR10"
+echo "Executing $CMD"
+$CMD > /dev/null
+./view_status.sh $1
+$CMD > /dev/null
 ./view_status.sh $1
 echo "to dump: ./dump_event.sh $1"
 echo "to chipskop: ./plot_chipskop.pl"
