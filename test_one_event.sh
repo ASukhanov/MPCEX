@@ -23,9 +23,9 @@ CSR10=0011fc8
 # Set to system clock, stop sequencer, this is very important!
 #Play_stapl.py i10 50011fc0 i16 aff00000
 # download SVXs on all carriers
-./svx_conf_enable.sh $1
+./svx_conf.sh $1 enable
 ./svx_download.sh $1
-./svx_conf_disable.sh $1
+./svx_conf.sh $1 disable
 #Play_stapl.py $SP_OPTION i10 5$CSR10 > /dev/null
 ./view_status.sh $1
 # sequencer is stopped, clock is internal, it is safe to setup sequencer for normal running

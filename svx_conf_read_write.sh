@@ -47,7 +47,7 @@ case "$1" in
     echo $USAGE
     exit
 esac
-echo "Note: Make sure ./svx_conf_enable.sh have been executed"
+echo "Note: Make sure ./svx_conf.sh $SP_OPTION enable have been executed"
 
 # setup FEM
 CMD="Play_stapl.py $SP_OPTION i10 00010$CSR10_bits_11_04$CSR10_bits_03_00"
@@ -61,5 +61,5 @@ echo "Executing: $CMD"
 echo "Executing: $CMD" >> $LOG
 $CMD
 # >> $LOG
-echo "Note: Do not forget to execute ./svx_conf_disable.sh when you are done"
+echo "Note: Do not forget to execute ./svx_conf.sh $SP_OPTION disable when you are done"
 echo "_______________________________ $HOSTNAME _________________________________" >> $LOG
