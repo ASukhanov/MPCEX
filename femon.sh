@@ -4,7 +4,7 @@
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
 # Working  mode
-CSR10=16#00000F08
+CSR10=16#50000F08
 
 for arg in "$@"
 do
@@ -27,6 +27,8 @@ done
 HEXNUM=`printf "%08x\n" $((CSR10))`
 # Start sequencer, local clear, local L1 once, back to working state
 CMD1="Play_stapl.py i16 aff00000 i10 50010fC8 70010fC8"
+# Not sure, maybe the short version below with only sequencer start is sufficient.
+#CMD1="Play_stapl.py i16 aff00000 i10"
 CMD2="Play_stapl.py i10 $HEXNUM"
 
 echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and b"
