@@ -26,13 +26,20 @@ done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
 # Start sequencer, local clear, local L1 once, back to working state
-CMD="Play_stapl.py i16 aff00000 i10 50010fC8 70010fC8; Play_stapl.py i10 $HEXNUM"
+CMD1="Play_stapl.py i16 aff00000 i10 50010fC8 70010fC8"
+CMD2="Play_stapl.py i10 $HEXNUM"
 
-echo "$HOSTNAME: Executing $CMD on FEM a and b"
-echo "$HOSTNAME: Executing $CMD on FEM a and b" >> $LOG
+echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and b"
+echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and b" >> $LOG
 
 # Setup FEM and start sequencer on FEMa
-$CMD > /dev/null
+#echo "Executing $CMD1"
+$CMD1 > /dev/null
+#echo "Executing $CMD2"
+$CMD2 > /dev/null
 
 # and on FEMb
-$CMD -g > /dev/null
+#echo "Executing $CMD1 -g"
+$CMD1 -g > /dev/null
+#echo "Executing $CMD2 -g"
+$CMD2 -g > /dev/null
