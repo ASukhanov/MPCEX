@@ -3,7 +3,7 @@
 USAGE="usage: $0 [a/b]"
 SP_OPTION=""
 # CSR10: All chains enabled (f00), triggers disabled (c0) , BClk (8)
-CSR10_bits_19_00=00fc0
+CSR10_bits_19_00=10fc0
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $HOSTNAME ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" >> $LOG
 

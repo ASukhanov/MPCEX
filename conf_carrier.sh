@@ -8,6 +8,9 @@ SP_OPTION=""
 if [ "$#" -lt "2" ]; then echo $USAGE; exit; fi
 VALUE=$2
 
+VALUE2=""
+if [ "$#" -ge "3" ]; then VALUE2=$3; fi
+
 CMD=""
 case "${1:0:1}" in
   "b")
@@ -27,11 +30,9 @@ if [ "$MASK" -gt "3" ]; then echo "ERROR. Carrier board number > 3"; exit; fi
 MASK=$((1<<$MASK))
 
 CMD="Play_stapl.py $SP_OPTION i1c $MASK;"
-# Play_stapl.py -c $SP_OPTION i30 $VALUE"
 echo "Executing: $CMD"
 $CMD > /dev/null
-CMD="Play_stapl.py -c $SP_OPTION i30 $VALUE i32 0"
+CMD="Play_stapl.py -c $SP_OPTION i30 $VALUE $VALUE2 i32 0"
 # |./splayer_dump.py"
 echo "Executing: $CMD"
-$CMD
-# > /dev/null
+$CMD > /dev/null

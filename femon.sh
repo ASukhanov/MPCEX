@@ -3,8 +3,8 @@
 # 2015-02-17	Version FEMr1-r13E
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
-# Standard mode
-CSR10=16#50000F08
+# Working  mode
+CSR10=16#00000F08
 
 for arg in "$@"
 do
@@ -25,7 +25,9 @@ do
 done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
-CMD="Play_stapl.py i10 $HEXNUM i16 aff00000"
+# Start sequencer, local clear, local L1 once, back to working state
+CMD="Play_stapl.py i16 aff00000 i10 50010fC8 70010fC8; Play_stapl.py i10 $HEXNUM"
+
 echo "$HOSTNAME: Executing $CMD on FEM a and b"
 echo "$HOSTNAME: Executing $CMD on FEM a and b" >> $LOG
 
