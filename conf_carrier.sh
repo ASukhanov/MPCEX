@@ -1,11 +1,11 @@
 #!/bin/bash
 # Configure Carrier Board
-USAGE="usage: $0 a/b0:3 hex_value"
+USAGE="usage: $0 a/b0:3 hex_value1 hex_value2, \ni.e. to reset counters on a: for i in 0 1 2 3; do $0 a\$i 10000 0 ; done;"
 
 MASK=1
 SP_OPTION=""
 
-if [ "$#" -lt "2" ]; then echo $USAGE; exit; fi
+if [ "$#" -lt "2" ]; then echo -e $USAGE; exit; fi
 VALUE=$2
 
 VALUE2=""
