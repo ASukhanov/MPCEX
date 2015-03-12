@@ -26,7 +26,7 @@ done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
 # Start sequencer, local clear, local L1 once, back to working state
-CMD1="Play_stapl.py i16 aff00000 i10 50010fC8 70010fC8"
+CMD1="Play_stapl.py i16 aff00000 i10 50110fC8 70010fC8"
 # Not sure, maybe the short version below with only sequencer start is sufficient.
 #CMD1="Play_stapl.py i16 aff00000 i10"
 CMD2="Play_stapl.py i10 $HEXNUM"
