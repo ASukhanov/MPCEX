@@ -1,6 +1,8 @@
 #!/bin/bash
 # Activate FEMs
 # 2015-02-17	Version FEMr1-r13E
+# 2015-03-14    Version FEMr1-r174, Stop/Start sequencer
+
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
 # Working  mode
@@ -25,10 +27,17 @@ do
 done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
-# Start sequencer, local clear, local L1 once, back to working state
-CMD1="Play_stapl.py i16 aff00000 i10 50110fC8 70010fC8"
+
+# Start sequencer, local reset, reset carriers, local L1 once
+#CMD1="Play_stapl.py i16 aff00000 i10 50110fC8 70010fC8"
+
+# Stop/Start sequencer, local reset, reset carriers, local L1 once
+# This might reset the cellIDs on carriers
+CMD1="Play_stapl.py i16 1ff00000 aff00000 i10 50110fC8 70010fC8"
+
 # Not sure, maybe the short version below with only sequencer start is sufficient.
 #CMD1="Play_stapl.py i16 aff00000 i10"
+
 CMD2="Play_stapl.py i10 $HEXNUM"
 
 echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and b"
