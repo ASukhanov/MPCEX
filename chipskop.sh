@@ -37,6 +37,9 @@ case "$2" in
   "arm_gap")
      ARM=2
     ;;
+  "arm_eor")
+     ARM=3
+    ;;
   "plot")
      ./plot_chipskop.py $1
      exit
