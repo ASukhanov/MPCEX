@@ -7,7 +7,7 @@ def usage():
 OPTIONS:\n\
 -c mask	: turn on/off channels defined by hex mask\n\
 -f	: force -c\n\
--h	: help\
+-h	: help\n\
 -a	: read analog voltage\n\
 -d	: read digital voltage\n\
 -v	: verbose\n\

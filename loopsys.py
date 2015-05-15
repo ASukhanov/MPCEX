@@ -12,6 +12,7 @@ nn = int(sys.argv[1])
 ss = sys.argv[2]
 
 for ii in range(nn):
-    print(' Executing \"' + ss +'\" ' + str(nn-ii) + ' times')
+    #print(' Executing \"' + ss +'\" ' + str(nn-ii) + ' times')
+    #print(str(nn-ii) + ': ')
     call(ss,shell=True)
     sleep(1)	

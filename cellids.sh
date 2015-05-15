@@ -9,12 +9,14 @@ Print Cell IDs
 OPTIONS:
   -r N	repeat N times
   -v	verbose
+  -h	print headers
 EOF
 }
 # defaults
 CMD=""
 VERB="0"
 REPEAT="1"
+ACTION="CELLIDS"
 
 process_cmd()
 {
@@ -39,15 +41,16 @@ printf "\n"
 }
 if [ "$#" -lt "1" ]; then usage; exit 1; fi
 OPTIND=2        # skip first argument
-while getopts ":r:v" opt; do
+while getopts ":r:vh" opt; do
   case $opt in
     v)	VERB="1";;
     r)	REPEAT=$OPTARG;;
+    h)	ACTION="HEADER";;
     :)	echo "Option -$OPTARG requires an argument." >&2; exit 1;;
   esac
 done
 
-CMD="StaplPlayer $FEM -acellids dump_cellids.stp"
+CMD="StaplPlayer $FEM -a$ACTION dump_cellids.stp"
 
 case "$1" in
   "b")	CMD="$CMD -g";;

@@ -1,25 +1,52 @@
 #!/bin/bash
-# Setup the sequencer for different types of run
-# Note, the sequencer Repeat command (code xxx1nnnn repeats the previous command nnnn times 
-SP_OPTION=""
-USAGE="usage: $0 [a/b] [trig/ped/cal/svx)"
+usage()
+{
+cat << EOF
+usage: $0 a/b/ab trig/ped/cal/svx options
 
-if [ "$#" -lt "2" ]; then echo $USAGE; exit; fi
+Setup the sequencer for different types of run
+
+OPTIONS:
+  -v    verbose
+  -h	help
+EOF
+}
+
+FEM=""  
+QUIET="1"
+FEM=""
+FEM1="a"
+FEM2=""
+SEQUENCE=""
+
+execute_cmd()
+{
+  IRSCAN="Play_stapl.py $FEM i16 "
+  CMD="$IRSCAN $DRSCAN"
+  if [ $QUIET -eq "0" ]; then echo "Executing: $CMD"; fi
+  eval $CMD > /dev/null
+  echo "Sequencer on FEM.$FEM1 is set for $SEQUENCE"
+}
+
+if [ "$#" -lt "2" ]; then usage; exit 1; fi
 
 case "$1" in
-  "b")
-    SP_OPTION="-g"
-    ;;
-  "a")
-     SP_OPTION=""
-    ;;
-  *)
-    echo $USAGE
-    exit
+  "b")	FEM="-g"; FEM1="b" ;;
+  "a")	;;
+  "ab")	FEM2="-g" ;;
+  *) usage ;;
 esac
 
-IRSCAN="Play_stapl.py $SP_OPTION i16 "
+OPTIND=3        # skip first arguments
+while getopts ":vh" opt; do
+  case $opt in
+    v) QUIET="0" ;;
+    h) usage ;;
+  esac
+done
 
+# Note, the sequencer Repeat command (code xxx1nnnn repeats the previous command nnnn times 
+SEQUENCE=$2
 
 case "$2" in
   cal) # for internal trigger with CalSR
@@ -41,22 +68,14 @@ case "$2" in
     DRSCAN="1FF00000 00000020 0012000 00300000 1FF00000"
     ;;
   *)
-    echo "usage: $0 ped/cal/trig/svx"
-    exit
+    usage
+    exit 1
 esac
 
-CMD="$IRSCAN $DRSCAN"
+execute_cmd
 
-#CMD_FEM_b="$CMD -g"
-
-echo "Executing: $CMD"
-#$CMD |./splayer_dump.py
-$CMD >/dev/null
-
-#echo "Executing: $CMD_FEM_b"
-#$CMD_FEM_b |./splayer_dump.py
-
-#Start sequencer without data output
-CMD="$IRSCAN 2FF00000"
-#echo "Executing: $CMD"
-#$CMD |./splayer_dump.py
+if [ "$FEM2" != "" ]; then 
+  FEM=$FEM2
+  FEM1="b"
+  execute_cmd
+fi

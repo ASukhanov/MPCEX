@@ -1,79 +1,104 @@
 #!/bin/bash
 # Control of the GTM_local engine in the MPCEX FEM
-USAGE="usage: $0 [a/b] osc/random/stop [period=0:f] [ntrigs=0:f] [interval=0:3] [delay=00:ff]\n
-where delay number of ticks is between L1 to PARst,period: f:0.6Hz, e:0.3Hz, 1:20khZ, 0:40KHz,\n
-interval between L1s: 0,1,2,3: 16,32,64,128 ticks.\n
-for example, single trigger: ./gtm_local.sh a start f 1 0 00; sleep 1;./gtm_local.sh a stop"
+# Control of the GTM_local engine in the MPCEX FEM
+usage ()
+{
+cat << EOF
+usage: usage: $0 a/b options gentype [options gentype ...] 
 
+Control of the GTM_local engine on the FEM.a or FEM.b
 
-#frequency=F: ~1Hz
-#frequency=0: ~65KHz
-# example of single trigger:
-EXAMPLE="./gtm_local.sh a start 01 1 f 1; sleep 1;./gtm_local.sh a stop"
+OPTIONS:
+  options for periodic triggers:
+  -p P	period [P=0:15]. P=15: 0.6Hz, P=14: 0.3Hz, ..., P=1: 20KHz, P=0: 40KHz
+  -t T	Number of triggers [T=0:15] in train.
+  -i I	Interval between triggers in train [I=0:7]. I=0: 16 ticks (1.6us), I=1: 32 ticks ....
+  -d D	delay of first trigger relative to Abort Gap  pulse [D=0:255]
 
-DELAY="01"	# max= FF
-NTRIGS="1"	# max = F
-FREQ="1"	# max = F
-CMDRUN="1"
-INTERVAL="0"
+GENTYPE:
+  -g G  generator type:
+        en            start periodic trigger generator
+        rand          start pseudo random trigger generator
+        stop          stop generator, default
 
-if [ "$#" -lt "2" ]; then echo -e $USAGE; exit; fi
+EXAMPLE:
+	short run with random pulse generation:
+  $0 b -g rand -g stop
+EOF
+}
+# the fastest working setting for gigabit ethernet and sending every second event: './gtm_local.sh a osc 4 5 5'
+# note, to drop every second event: 'Play_stapl.py i20 1'
+
+#EXAMPLE="./gtm_local.sh a -g osc -t3; sleep 1; ./gtm_local.sh a stop"
+
+GENTYPE=""
+DELAY="1"
+NTRIGS="1"
+FREQ="2"
+
+# dqcapture frequencies for L1Stack=5, interval=4
+#		writing		not writing
+#FREQ="3"                       5700 Hz
+#FREQ="4"			3060 Hz
+#FREQ="5"	# 1350 Hz	1530 Hz
+#FREQ="6"       # 740 Hz
+#FREQ="7"       # 370 Hz
+#FREQ="8"       # 190 Hz
+#FREQ="a"       # 50 Hz
+
+CMDRUN=1
+INTERVAL=4	# 13.4 us default, four of L1s during SVX busy = 46uS
+#INTERVAL="1"	# 1.6 us
+#INTERVAL="2"   # 3.4 us
+#INTERVAL="3"   # 6.7 us
+#INTERVAL="4"   # 13.4 us
+#INTERVAL="5"   # 26.8 us, L1[1] infirst readout, L1[2:3] in second readout, which starts at 52 us, third - at 68
+#INTERVAL="6"   # 53.6 us
+#INTERVAL="7"   # 107.2 us
+#INTERVAL="8"   # 214.4 us
+
+if [ "$#" -lt "1" ]; then usage; exit; fi
 
 case "$1" in
-  "b")
-    SP_OPTION="-g"
-    ;;
-  "a")
-     SP_OPTION=""
-    ;;
-  *)
-    echo $USAGE
-    exit
+  "b")	SP_OPTION="-g";;
+  "a")	SP_OPTION="";;
+  *) 	usage; exit 1;;
 esac
 
-case "$1" in
-  "b")
-    SP_OPTION="-g"
-    ;;
-  "a")
-     SP_OPTION=""
-    ;;
-  *)  
-    echo $USAGE
-    exit
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#	Execute the command
+execmd () {
+case "$GENTYPE" in
+  "en") echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"
+        CMDRUN="3";;
+  "rand")     echo "Random triggering"; CMDRUN="1";;
+  *)     Play_stapl.py $SP_OPTION i26 0 >> /dev/null; echo "Generator stopped"; exit;;
 esac
-
-if [ "$#" -ge "6" ]; then DELAY=$6; fi
-if [ "$#" -ge "4" ]; then NTRIGS=$4; fi
-if [ "$#" -ge "3" ]; then FREQ=$3; fi
-if [ "$#" -ge "5" ]; then INTERVAL=$5; fi
-
-case "$2" in
-  "osc")
-    echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"
-    CMDRUN="3"
-    ;;
-  "random")
-    echo "Random triggering"
-    CMDRUN="1"
-    ;;
-  "stop")
-    Play_stapl.py $SP_OPTION i26 0
-    echo "Generator stopped"
-    exit;
-    ;;
-  *)
-    echo -e $USAGE
-    exit
-esac
-
 let "NTRIGS = $NTRIGS-1"
-if [ ${#DELAY} -ne "2" ]; then echo "Delay should be 2 digit, from 00 to ff"; exit; fi
-DRSCAN=00$INTERVAL$CMDRUN$NTRIGS$DELAY$FREQ
-if [ ${#DRSCAN} -ne "8" ]; then echo "$DRSCAN should be 8 digits"; exit; fi
+let "DRSCAN = $INTERVAL<<20 | $CMDRUN<<16 | $NTRIGS<<12 | $DELAY<<4 | $FREQ"
+DRSCAN=`printf "%08x\n" $DRSCAN`
+
 CMD="Play_stapl.py $SP_OPTION i26 $DRSCAN"
 
 echo "Executing: $CMD"
-$CMD
+eval $CMD >> /dev/null
+}
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
+OPTIND=2        # skip first arguments
+while getopts ":p:t:i:d:c:g:h" opt; do
+  #echo "opt=$opt"
+  case $opt in
+    p)  let "FREQ =     $OPTARG & 16#F";;
+    d)  let "DELAY =    $OPTARG & 16#FF";;
+    t)  let "NTRIGS =   $OPTARG & 16#F";;
+    i)  let "INTERVAL = $OPTARG & 16#FF";;
+    g)  GENTYPE=$OPTARG; execmd;;
+    h)  usage;;
+    ?)  echo "ERROR, Illegal option"; exit 1;;
+    *)  ;;
+  esac
+done
+shift $((OPTIND-1))
+if [ $# -ne 0 ]; then echo "Illegal comand: $1"; fi
 

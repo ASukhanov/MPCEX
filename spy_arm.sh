@@ -29,4 +29,4 @@ echo -e "Executing: $CMD"
 # |./splayer_dump.py"
 $CMD |./splayer_dump.py
 
-echo "To dump more use: StaplPlayer $SP_OPTION -atrans dump1k.stp"
+echo "To dump more use: StaplPlayer $SP_OPTION -atrans dump1k.stp |./splayer_dump.py"

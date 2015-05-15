@@ -25,17 +25,30 @@ SEQUENCER_MODIFIED=0
 CARRIER_OPTIONS=""
 FEM_SETTING=""
 
+#''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Local settings, for test bench
+#FILE="svx2.stp"
+#CARRIER_OPTIONS="-b111111" # bypass modules 2,4,5
+
 #FILE="svx3.stp"
-#CARRIER_OPTIONS="-b011010" # bypass modules 2,4,5
+#CARRIER_OPTIONS="-b001110" # bypass modules 2,4,5
+#CARRIER_OPTIONS="-b001110" # bypass modules 2,4,5
+#CARRIER_OPTIONS="-b010110" # bypass modules 2,4,5
 #CARRIER_OPTIONS="-b001110 -n -p14" # bypass modules 2,3,4, CN mode, connect SDI probe to SDI
+
+#FILE="svx4.stp"
+#CARRIER_OPTIONS="-b000110"      # bypass modules 2,5
+
 #FILE="svx5.stp"
-#CARRIER_OPTIONS="-b000010"      # bypass modules 2
+#CARRIER_OPTIONS="-b000010"      # bypass module 2
+
 FILE="svx6.stp"
 CARRIER_OPTIONS="-b000000"
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 FEM_SETTING="Play_stapl.py i10 50000F08"     # all CBs enabled, CB0 - master
-#FEM_SETTING="Play_stapl.py i10 50000C38"     # CB2,3 enabled, CB3 - master
+#FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master
+#FEM_SETTING="Play_stapl.py i10 50000f08"     # CB0,1 enabled, CB0 - master
 
 OPTIND=2        # skip first argument
 while getopts ":v:f:d" opt; do
@@ -61,8 +74,10 @@ if [ $DOWNLOAD == 1 ]; then
 ./svx_download.sh $1 -v0 -f $FILE;  # download the chain;
 SEQUENCER_MODIFIED=1;
 fi
+
 #./view_status.sh $1
 ./send_calstrobe_to_carrier.sh ${1:0:1}; # latch the downloading
+
 if [ $VERB -ge "1" ]; then
 # read back the configuration
 ./svx_download.sh ${1:0:1}0 -v1 -f $FILE;

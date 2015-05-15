@@ -23,7 +23,7 @@ IRSCAN 8, $16, CAPTURE irdata[7..0];
 DRSCAN 32, $1ff00000, CAPTURE irdata[31..0];
 DRSCAN 32, $00000018, CAPTURE irdata[31..0];
 DRSCAN 32, $00120000, CAPTURE irdata[31..0];
-DRSCAN 32, $00200000, CAPTURE irdata[31..0];
+DRSCAN 32, $80200000, CAPTURE irdata[31..0];
 ' Start downloading
 IRSCAN 8, $18, CAPTURE irdata[7..0];
 'Last chip flag = 0
