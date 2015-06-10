@@ -14,7 +14,8 @@ EOF
 # defaults
 CSR20="00000000"
 CSR21="00000000"
-SKIP="1"	# skip every 2nd event, good for ethernet
+#SKIP="1"        # skip every 2nd event, good for ethernet
+SKIP="0"	# do not skip events
 VERB=7
 STATUS=""
 
