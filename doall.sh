@@ -21,34 +21,33 @@ EOF
 VERB="0"
 DOWNLOAD=0
 SEQUENCER_MODIFIED=0
+
 # Standard settings, to be used at PHENIX
-CARRIER_OPTIONS=""
 FEM_SETTING=""
+FILE="svx6.stp"
+CARRIER_OPTIONS="-b000000"
 
 #''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Local settings, for test bench
-#FILE="svx2.stp"
-#CARRIER_OPTIONS="-b111111" # bypass modules 2,4,5
+#FILE="svx1.stp"	# download one module
+#CARRIER_OPTIONS="-b111111" # bypass all modules
+#CARRIER_OPTIONS="-b011111" # bypass all except 6
 
 #FILE="svx3.stp"
-#CARRIER_OPTIONS="-b001110" # bypass modules 2,4,5
-#CARRIER_OPTIONS="-b001110" # bypass modules 2,4,5
-#CARRIER_OPTIONS="-b010110" # bypass modules 2,4,5
-#CARRIER_OPTIONS="-b001110 -n -p14" # bypass modules 2,3,4, CN mode, connect SDI probe to SDI
+#CARRIER_OPTIONS="-b001110" # bypass modules 4,3,2
+#CARRIER_OPTIONS="-b010110" # bypass modules 5,3,2
+#CARRIER_OPTIONS="-b001110 -n -p14" # bypass modules 4,3,2, CN mode, connect SDI probe to SDI
 
 #FILE="svx4.stp"
 #CARRIER_OPTIONS="-b000110"      # bypass modules 2,5
 
 #FILE="svx5.stp"
 #CARRIER_OPTIONS="-b000010"      # bypass module 2
-
-FILE="svx6.stp"
-CARRIER_OPTIONS="-b000000"
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-FEM_SETTING="Play_stapl.py i10 50000F08"     # all CBs enabled, CB0 - master
+#FEM_SETTING="Play_stapl.py i10 50000F08"     # all CBs enabled, CB0 - master
 #FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master
-#FEM_SETTING="Play_stapl.py i10 50000f08"     # CB0,1 enabled, CB0 - master
+FEM_SETTING="Play_stapl.py i10 50000308"     # CB0,1 enabled, CB0 - master
 
 OPTIND=2        # skip first argument
 while getopts ":v:f:d" opt; do
@@ -68,9 +67,11 @@ case "${1:0:1}" in
   *) usage; exit;;
 esac
 
+echo "executing ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d"
 ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d;	# FEMODE=0, SVX downloading enabled
+
 if [ $DOWNLOAD == 1 ]; then
-#echo "executing ./svx_download.sh $1 -v -f $FILE"
+echo "executing ./svx_download.sh $1 -v -f $FILE"
 ./svx_download.sh $1 -v0 -f $FILE;  # download the chain;
 SEQUENCER_MODIFIED=1;
 fi
@@ -87,7 +88,10 @@ if [ $VERB -ge "1" ]; then
 SEQUENCER_MODIFIED=1;
 fi
 
-./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS	# FEMODE=1, ACQUIRE mode at SVXs
+CMD="./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS"   # FEMODE=1, ACQUIRE mode at SVXs
+echo "executing $CMD"
+$CMD
+
 if [ $SEQUENCER_MODIFIED == 1 ]; then
 ./sequencer.sh ${1:0:1} trig;	# set sequencer
 fi
