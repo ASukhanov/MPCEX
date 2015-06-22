@@ -76,7 +76,7 @@ case "$FEM" in
     usage
     exit 1
 esac
-if [ $VERB -ge "2" ]; then 
+if [ $VERB -ge "3" ]; then 
 echo "Make sure that the configuration is opened using ./carrier_config.sh $FEM -d";
 fi
 if [ "${#1}" -eq "2" ]; then #echo "enabling only one chain ${1:0:2} for downloading";
@@ -126,7 +126,7 @@ if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
 #echo "Executing: $CMD" >> $LOG
 eval $CMD > /dev/null
 #./svx_conf.sh $FEM disable
-if [ $VERB -ge "2" ]; then
+if [ $VERB -ge "3" ]; then
 echo "WARNING. Do not forget to close configuration for normal data taking: ./carrier_config.sh $FEM";
 echo "WARNING. Sequencer is modified. To recover: ./sequencer.sh $FEM trig";
 fi
