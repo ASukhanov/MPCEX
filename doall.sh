@@ -45,9 +45,11 @@ CARRIER_OPTIONS="-b000000"
 #CARRIER_OPTIONS="-b000010"      # bypass module 2
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-#FEM_SETTING="Play_stapl.py i10 50000F08"     # all CBs enabled, CB0 - master
+#FEM_SETTING="Play_stapl.py i10 50000F08"     # default, all CBs enabled, CB0 - master
 #FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master
-FEM_SETTING="Play_stapl.py i10 50000308"     # CB0,1 enabled, CB0 - master
+#FEM_SETTING="Play_stapl.py i10 50000308"     # CB0,1 enabled, CB0 - master
+FEM_SETTING="Play_stapl.py i10 50000528"     # CB0,2 enabled, CB2 - master
+
 
 OPTIND=2        # skip first argument
 while getopts ":v:f:d" opt; do
@@ -67,24 +69,23 @@ case "${1:0:1}" in
   *) usage; exit;;
 esac
 
-echo "executing ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d"
-./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d;	# FEMODE=0, SVX downloading enabled
+echo "executing ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d -p8"
+./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d -p8;	# FEMODE=0, SVX downloading enabled
 
-if [ $DOWNLOAD == 1 ]; then
-echo "executing ./svx_download.sh $1 -v -f $FILE"
+if [ $DOWNLOAD == "1" ]; then
+echo "executing ./svx_download.sh $1 -v0 -f $FILE"
 ./svx_download.sh $1 -v0 -f $FILE;  # download the chain;
+#./view_status.sh $1
+./send_calstrobe_to_carrier.sh ${1:0:1}; # latch the downloading
 SEQUENCER_MODIFIED=1;
 fi
 
-#./view_status.sh $1
-./send_calstrobe_to_carrier.sh ${1:0:1}; # latch the downloading
-
 if [ $VERB -ge "1" ]; then
 # read back the configuration
-./svx_download.sh ${1:0:1}0 -v1 -f $FILE;
-./svx_download.sh ${1:0:1}1 -v1 -f $FILE;
-./svx_download.sh ${1:0:1}2 -v1 -f $FILE;
-./svx_download.sh ${1:0:1}3 -v1 -f $FILE;
+./svx_download.sh ${1:0:1}0 -v$VERB -f $FILE;
+./svx_download.sh ${1:0:1}1 -v$VERB -f $FILE;
+./svx_download.sh ${1:0:1}2 -v$VERB -f $FILE;
+./svx_download.sh ${1:0:1}3 -v$VERB -f $FILE;
 SEQUENCER_MODIFIED=1;
 fi
 

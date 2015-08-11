@@ -23,8 +23,12 @@ execute_cmd()
 {
   IRSCAN="Play_stapl.py $FEM i16 "
   CMD="$IRSCAN $DRSCAN"
-  if [ $QUIET -eq "0" ]; then echo "Executing: $CMD"; fi
-  eval $CMD > /dev/null
+  if [ $QUIET -eq "0" ]; then
+    echo "Executing: $CMD";
+    eval $CMD | ./splayer_dump.py
+  else
+    eval $CMD > /dev/null
+  fi
   echo "Sequencer on FEM.$FEM1 is set for $SEQUENCE"
 }
 

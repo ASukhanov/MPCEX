@@ -10,7 +10,7 @@ if [ $1 == "b" ]; then SP_OPTION="-g"; fi
 #if [ $# == 2 ]; then FPGA="fem; fi
 if [ $# == 2 ]; then ACTION=-a$2; fi
 
-SFILE=$(ls -t /phenixhome/phnxrc/MPCEX/FEMr1-* | head -1)
+SFILE=$(ls -t /phenixhome/phnxrc/MPCEX/FEMr* | head -1)
 CMD="StaplPlayer $SP_OPTION $ACTION $SFILE"
 
 echo "Executing $CMD"

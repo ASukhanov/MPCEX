@@ -13,12 +13,13 @@ VERB="0"
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
 # Working  mode
-CSR10=16#50000F08	# standard
+#CSR10=16#50000F08	# standard
 #CSR10=16#50008F08	# Err_halt, all CB enabled,CB0 master
 #CSR10=16#50008C28       # Err_halt, CB2:3 enabled, CB2-master
 #CSR10=16#50008C38       # Err_halt, CB2:3 enabled, CB3-master
 #CSR10=16#50008C28       # Err_halt, all enabled, CB2-master
-#CSR10=16#50000108
+CSR10=16#50000108	# CB0 enabled, CB0 master
+#CSR10=16#50000528       # CB0 and CB2 enabled, CB2 master.
 #CSR10=16#50000D38	# CB2&3 enabled, CB3 master
 #CSR10=16#50002D38       # CB2&3 enabled, CB3 master, PARst disabled
 

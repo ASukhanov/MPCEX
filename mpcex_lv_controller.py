@@ -13,7 +13,7 @@ OPTIONS:\n\
 -v	: verbose\n\
 none	: print hardware version\n\n\
 EXAMPLES:\n\
-to switch on ch 7 & 4:'+sys.argv[0]+' -c 10010000 \n')
+to switch on ch 8 & 4:'+sys.argv[0]+' -c 10001000 \n')
 
 need_readback = False
 forced=0
