@@ -11,6 +11,10 @@ gpio export 7 out
 gpio -g mode 7 out
 gpio -g write 7 0
 
+# unload/load spi driver, the previous commands affect the spi driver access
+gpio unload spi
+gpio load spi
+
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 #### local section
 #
