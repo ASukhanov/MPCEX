@@ -18,6 +18,9 @@ $0 b -v1	# also read back the SVX configurations on all chains
 $0 b -d -v1	# re-download of SVXs on all chains
 EOF
 }
+
+#version 2 2015-08-18. corrected -f behavior
+
 VERB="0"
 DOWNLOAD=0
 SEQUENCER_MODIFIED=0
@@ -56,7 +59,7 @@ while getopts ":v:f:d" opt; do
   #echo "opt=$opt"
   case $opt in
     d) DOWNLOAD="1";;
-    f) FILE=$FILE;;
+    f) FILE=$OPTARG;;
     v) VERB=$OPTARG;;
     \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
     :)  echo "Option -$OPTARG requires an argument." >&2; exit 1
