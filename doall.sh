@@ -26,9 +26,9 @@ DOWNLOAD=0
 SEQUENCER_MODIFIED=0
 
 # Standard settings, to be used at PHENIX
-FEM_SETTING=""
+FEM_SETTING="Play_stapl.py i10 50000F08" # default. All CBs will be downloaded simultaneously, CB0 - master
 FILE="svx6.stp"
-CARRIER_OPTIONS="-b000000"
+CARRIER_OPTIONS="-b000000" # no bypassed modules
 
 #''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Local settings, for test bench
@@ -48,11 +48,10 @@ CARRIER_OPTIONS="-b000000"
 #CARRIER_OPTIONS="-b000010"      # bypass module 2
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-#FEM_SETTING="Play_stapl.py i10 50000F08"     # default, all CBs enabled, CB0 - master
+# options for debugging
 #FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master
 #FEM_SETTING="Play_stapl.py i10 50000308"     # CB0,1 enabled, CB0 - master
-FEM_SETTING="Play_stapl.py i10 50000528"     # CB0,2 enabled, CB2 - master
-
+#FEM_SETTING="Play_stapl.py i10 50000528"     # CB0,2 enabled, CB2 - master
 
 OPTIND=2        # skip first argument
 while getopts ":v:f:d" opt; do
@@ -84,7 +83,8 @@ SEQUENCER_MODIFIED=1;
 fi
 
 if [ $VERB -ge "1" ]; then
-# read back the configuration
+# read back the configuration of all chains
+echo "reading back configuration on all chains"
 ./svx_download.sh ${1:0:1}0 -v$VERB -f $FILE;
 ./svx_download.sh ${1:0:1}1 -v$VERB -f $FILE;
 ./svx_download.sh ${1:0:1}2 -v$VERB -f $FILE;

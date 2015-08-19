@@ -67,48 +67,37 @@ Play_stapl.py $FEM i10 50100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset ca
 if [ $VERB -ge "2" ]; then echo executing Play_stapl.py $FEM i1c $SM; fi
 Play_stapl.py $FEM i1c $SM > /dev/null; # select carrier board 0
 
-NERR=0
+GNERR=0
 #for BIT in 01 02 04 08 10 20 40 80 03 06 0C 30 60 c0 A0 E0 30 28 20 B0 A8 B8 18; do
 for BIT in A0 E0 30 28 20 B0 A8 B8 18; do # L1, PARst, Dig, PR2, FEClk, L1+Dig, L1+PR2, L1+Dig+PR2 FECLK-FEMODE
-#for BIT in 18; do
-#for BIT in 00 18 ff; do
-  ERR=0
+#for BIT in 00 A8; do
+  NERR=0
   if [ $VERB -ge "2" ]; then echo Play_stapl.py i16 1ff00000 000000$BIT 00120000 AFF00000; fi
   if [ $VERB -ge "1" ]; then echo pattern $BIT loaded, check 32 times:;fi
   Play_stapl.py $FEM i16 1ff00000 000000$BIT 00120000 AFF00000 > /dev/null; # load sequencer with single command and start it
-  #./chipskop.sh a arm_seq 1
-  ##./svx_download.sh a -v3 -f svx1.stp
-  ##StaplPlayer  -aTrans svx1.stp
   if [ $VERB -ge "2" ]; then echo executing: Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0; fi
   Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset carriers, set trigger and clock sources
 
   if [ $VERB -ge "2" ]; then echo executing: StaplPlayer $FEM -aTrans dbg_one_sequencer_cycle.stp; fi
   StaplPlayer $FEM -aTrans dbg_one_sequencer_cycle.stp > /dev/null;
 
-  #./view_carriers.sh a
-  #Play_stapl.py  i1c 1
   printf "${BIT}= "
-  (Play_stapl.py $FEM -c i32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;) | ( # | ./splayer_dump.py
+  # need lastpipe bash option, othervise the following subshell will not change the variables
+  shopt -s lastpipe
+  Play_stapl.py $FEM -c i32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
+  {
     while read line
     do
-      #echo line: $line;
       STR=${line#*value = }
-      #echo "$STR"
       if [ "${STR:0:3}" == "HEX" ]; then
-        printf "${STR:5:2},"
-        if [ "${STR:5:2}" != $BIT ]; then let "ERR = 1"; let "NERR = NERR + 1"; fi
+        printf "${STR:5:2}"
+        if [ "${STR:5:2}" != $BIT ]; then let "NERR = NERR + 1"; printf "?"; else printf ","; fi
       fi
     done
-    if [ $ERR -eq "0" ]; then printf " OK\n"
-    else printf " ERR! $NERR\n"; fi
-  )
-  #printf " $ERR,$NERR\n"
-  #if [ $ERR -ne "0" ]; then printf "ERR!\n";
-  #else printf " $ERR,$NERR\n"; fi
-  #./chipskop.sh a plot
-  #SFILE=$(ls -t waveforms/csk_* | head -1)
-  ##echo $SFILE
-  #scp $SFILE andrey@130.199.23.189:work/MPCEX/waveforms/
+  }
+  #printf " $NLINE:ERR=$ERR,$NERR. ";
+  if [ $NERR -eq "0" ]; then printf "\nOK\n"
+  else printf "\n$NERR Errors!\n"; fi
+  let "GNERR = GNERR + NERR"
 done
-
-if [ $NERR != 0 ]; then echo "ERRORS detected: $NERR"; fi
+if [ $GNERR -gt "0" ]; then echo "ERRORS detected: $GNERR"; fi
