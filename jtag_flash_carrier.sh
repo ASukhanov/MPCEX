@@ -14,18 +14,20 @@ Configure FPGA on the carrier board
 OPTIONS:
   -f    file to download
   -p    program FPGA
+  -r    read/verify FPGA
 EOF
 }
 
 FILE=$(ls -t /phenixhome/phnxrc/MPCEX/CAR* | head -1)
 
 OPTIND=2        # skip first argument
-while getopts ":v:f:dhp" opt; do
+while getopts ":v:f:dhpr" opt; do
   case $opt in
     f) FILE=$OPTARG;;
     v) VERB=$OPTARG;;
     h) usage; exit 1;;
     p) ACTION="PROGRAM";;
+    r) ACTION="VERIFY";;
     \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
     :)  echo "Option -$OPTARG requires an argument." >&2; exit 1
 esac
