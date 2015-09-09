@@ -70,6 +70,7 @@ Play_stapl.py $FEM i1c $SM > /dev/null; # select carrier board 0
 GNERR=0
 #for BIT in 01 02 04 08 10 20 40 80 03 06 0C 30 60 c0 A0 E0 30 28 20 B0 A8 B8 18; do
 for BIT in A0 E0 30 28 20 B0 A8 B8 18; do # L1, PARst, Dig, PR2, FEClk, L1+Dig, L1+PR2, L1+Dig+PR2 FECLK-FEMODE
+#for BIT in B0; do 
 #for BIT in 00 A8; do
   NERR=0
   if [ $VERB -ge "2" ]; then echo Play_stapl.py i16 1ff00000 000000$BIT 00120000 AFF00000; fi
@@ -78,8 +79,9 @@ for BIT in A0 E0 30 28 20 B0 A8 B8 18; do # L1, PARst, Dig, PR2, FEClk, L1+Dig, 
   if [ $VERB -ge "2" ]; then echo executing: Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0; fi
   Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset carriers, set trigger and clock sources
 
-  if [ $VERB -ge "2" ]; then echo executing: StaplPlayer $FEM -aTrans dbg_one_sequencer_cycle.stp; fi
-  StaplPlayer $FEM -aTrans dbg_one_sequencer_cycle.stp > /dev/null;
+  # The following is not necessary as sequencer is running permanently
+  #if [ $VERB -ge "2" ]; then echo executing: StaplPlayer $FEM -aTrans one_sequencer_cycle.stp; fi
+  #StaplPlayer $FEM -aTrans one_sequencer_cycle.stp # > /dev/null;
 
   printf "${BIT}= "
   # need lastpipe bash option, othervise the following subshell will not change the variables
@@ -95,9 +97,9 @@ for BIT in A0 E0 30 28 20 B0 A8 B8 18; do # L1, PARst, Dig, PR2, FEClk, L1+Dig, 
       fi
     done
   }
-  #printf " $NLINE:ERR=$ERR,$NERR. ";
   if [ $NERR -eq "0" ]; then printf "\nOK\n"
   else printf "\n$NERR Errors!\n"; fi
   let "GNERR = GNERR + NERR"
+  #sleep 5
 done
 if [ $GNERR -gt "0" ]; then echo "ERRORS detected: $GNERR"; fi
