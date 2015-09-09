@@ -35,7 +35,8 @@ case $PROBE in
 9) SIGNAL="SDO+BClkEn";;
 8) SIGNAL="FEClk";;
 7) SIGNAL="LPrOut";;
-6) SIGNAL="FEMode";;
+#6) SIGNAL="FEMode";; #prior to SC1F-v116
+6) SIGNAL="SDO";;
 5) SIGNAL="Bus0R";;
 4) SIGNAL="D0";;
 3) SIGNAL="OBDV";;
