@@ -74,7 +74,8 @@ case "$GENTYPE" in
   "rand")     echo "Random triggering"; CMDRUN="1";;
   *)     Play_stapl.py $SP_OPTION i26 0 >> /dev/null; echo "Generator stopped"; exit;;
 esac
-let "NTRIGS = $NTRIGS-1"
+#let "NTRIGS = $NTRIGS-1"
+let "NTRIGS = $NTRIGS" # for firmware version after FEM-v1D2
 let "DRSCAN = $INTERVAL<<20 | $CMDRUN<<16 | $NTRIGS<<12 | $DELAY<<4 | $FREQ"
 DRSCAN=`printf "%08x\n" $DRSCAN`
 
