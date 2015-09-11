@@ -63,7 +63,7 @@ if [ $VERB -ge "2" ]; then echo "CB=$CB, Select mask = $SM"; fi
 
 if [ $VERB -ge "2" ]; then echo executing: Play_stapl.py $FEM i10 50100000 00010${SM:0:1}${CB:0:1}0; fi
 Play_stapl.py $FEM i10 50100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset carriers, set trigger and clock sources
-./carrier_config.sh a -b000000 -d -p9
+./carrier_config.sh ${1:0:1} -b000000 -d -p9
 if [ $VERB -ge "2" ]; then echo executing Play_stapl.py $FEM i1c $SM; fi
 Play_stapl.py $FEM i1c $SM > /dev/null; # select carrier board 0
 

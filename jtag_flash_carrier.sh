@@ -36,8 +36,8 @@ done
 #select FEM
 FEM=${1:0:1}
 case "$FEM" in
-  "b") SP_OPTION="-g";;
-  "a") SP_OPTION="";;
+  "b") SP_OPTION="-g"; GPIO="7";;
+  "a") SP_OPTION=""; GPIO="8";;
   *)echo "FEM should be a or b"; usage; exit 1;;
 esac
 
@@ -52,7 +52,7 @@ CMD="Play_stapl.py $SP_OPTION i1c $HEXNUM"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD >> /dev/null
 
-CMD="gpio -g $SP_OPTION write $GPIO 1"
+CMD="gpio -g write $GPIO 1"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD
 
@@ -60,7 +60,7 @@ CMD="StaplPlayer $SP_OPTION -a$ACTION $FILE"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD
 
-CMD="gpio -g $SP_OPTION write $GPIO 0"
+CMD="gpio -g write $GPIO 0"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD
 
