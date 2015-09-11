@@ -99,7 +99,7 @@ $CMD
 if [ $SEQUENCER_MODIFIED == 1 ]; then
 ./sequencer.sh ${1:0:1} trig;	# set sequencer
 fi
-./femon.sh
+#./femon.sh
 #echo $FEM_SETTING $SP_OPTION
 eval $FEM_SETTING $SP_OPTION > /dev/null;
 ./view_status.sh ${1:0:1};
