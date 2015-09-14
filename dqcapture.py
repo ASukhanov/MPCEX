@@ -23,6 +23,7 @@ prevev=0
 writing_enabled = False
 dump_enabled = False
 dump_trailer = True
+cellids = False # decode cell IDs
 nerrlen=0
 prevlen=0
 
@@ -64,7 +65,10 @@ for opt in sys.argv:
 		dump_enabled = True
 		print('Dump enabled')
 	if opt == '-q':
-		quiet = 1;
+		quiet = 1
+        if opt == '-c':
+                print('Cell ID Decoding enabled')
+		cellids = True
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #s.bind(('<broadcast>', port))
@@ -114,6 +118,10 @@ while True:
 		print('ERROR short event '+str(msglen))
 		continue
 	if quiet == 0:
+                if print_cell_numbers:
+			for ii in range(12):
+				print(struct.unpack_from('>HH',msg(10+258*ii)
+			continue
 		ev_hdr = struct.unpack_from('>HHHHHHHHHHHHHHHHHHHHHH',msg,ev_offset*2)
 		for ii in range(22):
 			print(hex(ev_hdr[ii]).split('0x')[1].zfill(4)),
