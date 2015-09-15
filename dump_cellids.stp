@@ -37,10 +37,9 @@ PROCEDURE DO_HEADER USES PARAMETERS;
 IRSCAN 8, $22, CAPTURE irdata[7..0];
 'Need 3 DRSCANs to change the address
 DRSCAN 32, $8000;
-'DRSCAN 32, $8000;
-DRSCAN 32, $A000;
+DRSCAN 32, $C000;
 for ii = 1 to 16 step 1;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $C000, CAPTURE idcode_data[31..0];
 EXPORT "",idcode_data[15..0];
 next ii;
 ENDPROC;
@@ -56,96 +55,63 @@ PROCEDURE DO_CELLIDS USES PARAMETERS, DO_RUN;
 
 IRSCAN 8, $22, CAPTURE irdata[7..0];
 DRSCAN 32, $8000;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
-EXPORT "Event",idcode_data[15..0];
-
 DRSCAN 32, $800A;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $800B, CAPTURE idcode_data[31..0];
+EXPORT "Event",idcode_data[15..0];
+DRSCAN 32, $810C, CAPTURE idcode_data[31..0];
 EXPORT "SVX00.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $810D, CAPTURE idcode_data[31..0];
 EXPORT "SVX00.32", idcode_data[15..0];
-
-DRSCAN 32, $810C;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $820E, CAPTURE idcode_data[31..0];
 EXPORT "SVX01.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $820F, CAPTURE idcode_data[31..0];
 EXPORT "SVX01.32", idcode_data[15..0];
-
-
-DRSCAN 32, $820E;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8310, CAPTURE idcode_data[31..0];
 EXPORT "SVX02.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8311, CAPTURE idcode_data[31..0];
 EXPORT "SVX02.32", idcode_data[15..0];
-
-DRSCAN 32, $8310;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8412, CAPTURE idcode_data[31..0];
 EXPORT "SVX03.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8413, CAPTURE idcode_data[31..0];
 EXPORT "SVX03.32", idcode_data[15..0];
-
-DRSCAN 32, $8412;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8514, CAPTURE idcode_data[31..0];
 EXPORT "SVX04.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8515, CAPTURE idcode_data[31..0];
 EXPORT "SVX04.32", idcode_data[15..0];
-
-DRSCAN 32, $8514;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8616, CAPTURE idcode_data[31..0];
 EXPORT "SVX05.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8617, CAPTURE idcode_data[31..0];
 EXPORT "SVX05.32", idcode_data[15..0];
-
-DRSCAN 32, $8616;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8718, CAPTURE idcode_data[31..0];
 EXPORT "SVX06.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8719, CAPTURE idcode_data[31..0];
 EXPORT "SVX06.32", idcode_data[15..0];
-
-DRSCAN 32, $8718;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $881A, CAPTURE idcode_data[31..0];
 EXPORT "SVX07.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $881B, CAPTURE idcode_data[31..0];
 EXPORT "SVX07.32", idcode_data[15..0];
-
-DRSCAN 32, $881A;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $891C, CAPTURE idcode_data[31..0];
 EXPORT "SVX08.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $891D, CAPTURE idcode_data[31..0];
 EXPORT "SVX08.32", idcode_data[15..0];
-
-DRSCAN 32, $891C;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8A1E, CAPTURE idcode_data[31..0];
 EXPORT "SVX09.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8A1F, CAPTURE idcode_data[31..0];
 EXPORT "SVX09.32", idcode_data[15..0];
-
-DRSCAN 32, $8A1E;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8B20, CAPTURE idcode_data[31..0];
 EXPORT "SVX10.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8B21, CAPTURE idcode_data[31..0];
 EXPORT "SVX10.32", idcode_data[15..0];
 
-DRSCAN 32, $8B20;
-DRSCAN 32, $A000;
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+'leftower
+DRSCAN 32, $8000, CAPTURE idcode_data[31..0];
 EXPORT "SVX11.10", idcode_data[15..0];
-DRSCAN 32, $A000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $8000, CAPTURE idcode_data[31..0];
 EXPORT "SVX11.32", idcode_data[15..0];
 
-CALL DO_RUN;
+'release event
+DRSCAN 32, $0000, CAPTURE idcode_data[31..0];
+DRSCAN 32, $0000, CAPTURE idcode_data[31..0];
 ENDPROC;
 ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -9,7 +9,7 @@ Print Cell IDs
 OPTIONS:
   -r N	repeat N times
   -v	verbose
-  -h	print headers
+  -d	print headers
 EOF
 }
 # defaults
@@ -21,7 +21,7 @@ ERRCnt="0"
 
 process_cmd()
 {
-  #echo "CMD= $CMD"
+  if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
 
   # need lastpipe bash option, othervise the following subshell will not change the variables
   shopt -s lastpipe
@@ -37,6 +37,9 @@ process_cmd()
           ((ii=$ii+1))
           REG=${STR:4:8}
           #printf "$ii,$REG\n"
+          if [ $ACTION == "HEADER" ]; then
+            printf "$REG ";
+          else
           case $ii in
             "1") printf "ev $REG: ";;
             "2") PATTERN=$REG; if [ $VERB -gt "0" ]; then printf "$REG "; fi;;
@@ -49,6 +52,7 @@ process_cmd()
                fi
                ;;
           esac
+          fi
         fi
     done
     if [ $ERR -ne "0" ]; then ((ERRCnt=$ERRCnt+1)); printf "ERR#$ERRCnt"; fi
@@ -58,11 +62,12 @@ process_cmd()
 
 if [ "$#" -lt "1" ]; then usage; exit 1; fi
 OPTIND=2        # skip first argument
-while getopts "r:v:h" opt; do
+while getopts "r:v:dh" opt; do
   case $opt in
     v)	VERB=$OPTARG;;
     r)	REPEAT=$OPTARG;;
-    h)	ACTION="HEADER";;
+    d)	ACTION="HEADER";;
+    h)  usage; exit 0;;
     :)	echo "Option -$OPTARG requires an argument." >&2; exit 1;;
   esac
 done
@@ -74,8 +79,6 @@ case "$1" in
   "a")	;;
   *) 	usage; exit 2;;
 esac
-
-#if [ $VERB -eq "1" ]; then eval $CMD; exit; fi
 
 while [ "$REPEAT" -gt "0" ];
 do

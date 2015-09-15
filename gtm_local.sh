@@ -100,6 +100,7 @@ while getopts ":p:t:i:d:c:g:h" opt; do
     *)  ;;
   esac
 done
+if [ $FREQ == "6" ]; then echo "Note option -p6 will produce false locked up cell IDs"; fi
 shift $((OPTIND-1))
 if [ $# -ne 0 ]; then echo "Illegal comand: $1"; fi
 
