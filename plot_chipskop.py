@@ -16,9 +16,9 @@ ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
 export_command = 'cp -p '+ofname+' /phenixhome/phnxrc/MPCEX/waveforms/'
 
 import sys
-#from matplotlib.widgets import Cursor
+from matplotlib.widgets import Cursor
 ##import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import subprocess
 import datetime
 import os
