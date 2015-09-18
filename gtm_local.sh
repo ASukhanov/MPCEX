@@ -10,10 +10,11 @@ Control of the GTM_local engine on the FEM.a or FEM.b
 
 OPTIONS:
   options for periodic triggers:
-  -p P	period [P=0:15]. P=15: 0.6Hz, P=14: 0.3Hz, ..., P=1: 20KHz, P=0: 40KHz
+  -p P	period [P=0:15]. P=15: 0.6Hz, P=14: 0.3Hz, ..., P4=2.5KHz, P3=5KHz, P2=10KHz, P1=20KHz, P0=40KHz
   -t T	Number of triggers [T=0:15] in train.
-  -i I	Interval between triggers in train [I=0:7]. I=0: 16 ticks (1.6us), I=1: 32 ticks ....
+  -i I	Interval between triggers (in clocks) in the train [I=0:255]
   -d D	delay of first trigger relative to Abort Gap  pulse [D=0:255]
+  -v    Verbose
 
 GENTYPE:
   -g G  generator type:
@@ -35,6 +36,7 @@ GENTYPE=""
 DELAY="1"
 NTRIGS="1"
 FREQ="2"
+VERB="0"
 
 # dqcapture frequencies for L1Stack=5, interval=4
 #		writing		not writing
@@ -81,13 +83,13 @@ DRSCAN=`printf "%08x\n" $DRSCAN`
 
 CMD="Play_stapl.py $SP_OPTION i26 $DRSCAN"
 
-echo "Executing: $CMD"
+if [ $VERB -gt "0" ]; then echo "Executing: $CMD"; fi
 eval $CMD >> /dev/null
 }
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 OPTIND=2        # skip first arguments
-while getopts ":p:t:i:d:c:g:h" opt; do
+while getopts ":p:t:i:d:c:g:hv" opt; do
   #echo "opt=$opt"
   case $opt in
     p)  let "FREQ =     $OPTARG & 16#F";;
@@ -95,6 +97,7 @@ while getopts ":p:t:i:d:c:g:h" opt; do
     t)  let "NTRIGS =   $OPTARG & 16#F";;
     i)  let "INTERVAL = $OPTARG & 16#FF";;
     g)  GENTYPE=$OPTARG; execmd;;
+    v)  VERB=$OPTARG;;
     h)  usage;;
     ?)  echo "ERROR, Illegal option"; exit 1;;
     *)  ;;

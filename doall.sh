@@ -85,10 +85,12 @@ fi
 if [ $VERB -ge "1" ]; then
 # read back the configuration of all chains
 echo "reading back configuration on all chains"
-./svx_download.sh ${1:0:1}0 -v$VERB -f $FILE;
-./svx_download.sh ${1:0:1}1 -v$VERB -f $FILE;
-./svx_download.sh ${1:0:1}2 -v$VERB -f $FILE;
-./svx_download.sh ${1:0:1}3 -v$VERB -f $FILE;
+for ii in {0..3}
+do
+  CMD="./svx_download.sh ${1:0:1}$ii -v$VERB -f $FILE;"
+  echo "Executing $CMD"
+  eval $CMD
+done
 SEQUENCER_MODIFIED=1;
 fi
 

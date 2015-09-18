@@ -87,6 +87,6 @@ do
   #echo "ERRCnt=$ERRCnt"
 done
 #echo "final ERRCnt=$ERRCnt"
-if [ $ERRCnt -gt "0" ]; then echo "ERRORS $ERRCnt";
-else echo "OK"
-fi
+#if [ $ERRCnt -gt "0" ]; then echo "ERRORS $ERRCnt";
+#else echo "OK"
+#fi

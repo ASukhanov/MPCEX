@@ -19,6 +19,7 @@ download one module on second chain of Fem.b : $0 b1 1
 EOF
 }
 # version #150420	Calstrobe removed, it should be external
+NOPLAY=0
 
 # CSR10: Local control (10000), All chains enabled (f00), triggers disabled (c0) , BClk (8)
 CSR10_bits_19_00=10fc0
@@ -80,9 +81,9 @@ if [ $VERB -ge "3" ]; then
 echo "Make sure that the configuration is opened using ./carrier_config.sh $FEM -d";
 fi
 if [ "${#1}" -eq "2" ]; then #echo "enabling only one chain ${1:0:2} for downloading";
-  CMD="Play_stapl.py $SP_OPTION i1c ${1:1:1}";	# setup JTAG path to the chain
-  if [ $VERB -ge "2" ]; then echo "Executing $CMD"; fi
-  eval $CMD >> /dev/null
+  #noneed#CMD="Play_stapl.py $SP_OPTION i1c ${1:1:1}";	# setup JTAG path to the chain
+  #noneed#if [ $VERB -ge "2" ]; then echo "Executing $CMD"; fi
+  #noneed#eval $CMD >> /dev/null
   let "CHAIN = ${1:1:1}&0x3"
   let "VAL = 16#$CSR10_bits_19_00"
   let "VAL = $VAL&0xfffff0cf"	# clear bits 11:8 and 5:4
@@ -103,8 +104,9 @@ if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
 eval $CMD > /dev/null
 
 # Download
+if [ $NOPLAY != "1" ]; then
 CMD="StaplPlayer $SP_OPTION -aTrans $FILE"
-if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
+if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
 (eval $CMD;) | (
 ii=$NCHIPS
 while read STR
@@ -119,6 +121,7 @@ do
   fi
 done
 )
+fi
 
 # Reset carriers
 CMD="Play_stapl.py $SP_OPTION i10 501$CSR10_bits_19_00 000$CSR10_bits_19_00"
