@@ -18,6 +18,7 @@ VERB="0"
 REPEAT="1"
 ACTION="CELLIDS"
 ERRCnt="0"
+FEM="a"
 
 process_cmd()
 {
@@ -41,7 +42,7 @@ process_cmd()
             printf "$REG ";
           else
           case $ii in
-            "1") printf "ev $REG: ";;
+            "1") printf "$FEM:ev $REG: ";;
             "2") PATTERN=$REG; if [ $VERB -gt "0" ]; then printf "$REG "; fi;;
             *) if [ $VERB -gt "0" ]; then printf "$REG"; fi;
                if [ $REG != $PATTERN ]; then
@@ -72,8 +73,9 @@ while getopts "r:v:dh" opt; do
   esac
 done
 
-CMD="StaplPlayer $FEM -a$ACTION dump_cellids.stp"
+CMD="StaplPlayer -a$ACTION dump_cellids.stp"
 
+FEM=${1:0:1}
 case "$1" in
   "b")	CMD="$CMD -g";;
   "a")	;;

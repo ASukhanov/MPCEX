@@ -2,7 +2,17 @@
 usage()
 {
 cat << EOF
-usage: $0 [femfake] [cbfake] [gray] [-v] 
+usage: $0 [a/b] OPTIONS
+
+Enable FEMs for data taking
+
+OPTIONS:
+  -f    FEMfake, fake data from FEM
+  -c    CBFake, fake data from carrier boards
+  -g    disable Gray decoding in FPGA
+  -i    FrontEnd Clock sourced from system clock
+  -vV   Verbosity = V
+
 EOF
 }
 # Activate FEMs
@@ -12,41 +22,38 @@ EOF
 VERB="0"
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 
+FEM="ab"
+#echo "${#1}"
+case "${1:0:1}" in
+  "a"|"b")
+    FEM=$1;OPTIND=2;;
+esac
+#echo "FEM=[$FEM]"
+
+#OPTIND=2        # skip first argument
+while getopts "fcgiv:" opt; do
+  #echo "opt=$opt"
+  case $opt in
+    f) CSR10=$((CSR10|0x4));;         # FEMFake, fake data from FEM
+    c) CSR10=$((CSR10|0x00100000));;  # CBFake fake data from carrier boards
+    g) CSR10=$((CSR10|0x00001000));;  # disable Gray decoding in FPGA, useful for FEMFake and CBFake
+    i) CSR10=$((CSR10&~0x00000008));; # internal clock
+    v) VERB=$OPTARG;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+    :)  echo "Option -$OPTARG requires an argument." >&2; exit 1
+esac
+done
+
 # Working  mode
-#CSR10=16#50000F08	# standard
+CSR10=16#50000F08	# standard
 #CSR10=16#50008F08	# Err_halt, all CB enabled,CB0 master
 #CSR10=16#50008C28       # Err_halt, CB2:3 enabled, CB2-master
 #CSR10=16#50008C38       # Err_halt, CB2:3 enabled, CB3-master
 #CSR10=16#50008C28       # Err_halt, all enabled, CB2-master
-CSR10=16#50000108	# CB0 enabled, CB0 master
+#CSR10=16#50000108	# CB0 enabled, CB0 master
 #CSR10=16#50000528       # CB0 and CB2 enabled, CB2 master.
 #CSR10=16#50000D38	# CB2&3 enabled, CB3 master
 #CSR10=16#50002D38       # CB2&3 enabled, CB3 master, PARst disabled
-
-for arg in "$@"
-do
-  case "$arg" in
-  femfake)	# fake data from FEM
-    CSR10=$((CSR10|0x4))
-    ;;
-  sclk)		# internal clock
-    CSR10=$((CSR10&~0x00000008))
-    ;;
-  cbfake)	# fake data from carrier boards
-    CSR10=$((CSR10|0x00100000))
-    ;;
-  gray)		# gray code 
-    CSR10=$((CSR10|0x00001000))
-    ;;
-  -v)
-    $VERB="1"
-    ;;
-  *)
-    usage
-    exit 1
-    ;;
-  esac
-done
 
 HEXNUM=`printf "%08x\n" $((CSR10))`
 
@@ -66,13 +73,15 @@ if [ $VERB -eq "1" ]; then echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and
 #echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and b" >> $LOG
 
 # Setup FEM and start sequencer on FEMa
-#echo "Executing $CMD1"
-eval $CMD1 > /dev/null
-#echo "Executing $CMD2"
-eval $CMD2 > /dev/null
+if [[ $FEM == *"a"* ]]; then
+  if [ $VERB -ge "0" ]; then echo "Executing: $CMD1; $CMD2"; fi
+  eval $CMD1 > /dev/null
+  eval $CMD2 > /dev/null
+fi
 
 # and on FEMb
-#echo "Executing $CMD1 -g"
-eval $CMD1 -g > /dev/null
-#echo "Executing $CMD2 -g"
-eval $CMD2 -g > /dev/null
+if [[ $FEM == *"b"* ]]; then
+  if [ $VERB -ge "0" ]; then echo "Executing $CMD1 -g; $CMD2 -g"; fi
+  eval $CMD1 -g > /dev/null
+  eval $CMD2 -g > /dev/null
+fi
