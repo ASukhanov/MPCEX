@@ -36,7 +36,7 @@ errcnt=0
 prev_errcnt=0
 prev_cellid = 0
 lock_count = 0
-MAX_LOCK_COUNT = 5
+MAX_LOCK_COUNT = 10
 expected_length = 0
 delta_time=10
 missed_ev = 0
@@ -74,7 +74,11 @@ def report():
                 txtout += hex(evnum)+' ev#'+str(events)+', evLen='+str(msglen)
 		txtout += ' accepted: '+str((events-prevev)/delta_time)+'ev/s,'
 		txtout += ' produced: '+str((events-prevev+missed_events)/delta_time)+'ev/s,'
-                txtout += ' nErrLen='+str(nerrlen)+', nCIDErr='+str(errcnt)
+                txtout += ' nErrLen='+str(nerrlen)+', nCIDErr='
+		if cellids:
+			txtout += str(errcnt)
+		else:
+			txtout += '?'
                 txtout += ', bytes in: '+str(bytesin) + ', out: '+str(bytesout)+'kB '
                 print(txtout)
 
@@ -174,10 +178,13 @@ while True:
 		else:
 			lock_count = 0;
 		if lock_count > MAX_LOCK_COUNT:
-			print('\nCell Lockup at event '+hex(evnum-MAX_LOCK_COUNT)+' file closed')
-			if sfil and not sfil.closed:
-				sfil.close() 
-			exit(1)
+			print('\nCell Lockup at event '+hex(evnum-MAX_LOCK_COUNT)+'. '),
+			print('Sleep 1s and continue'),
+			time.sleep(1)
+			#print('File closed'),
+			#if sfil and not sfil.closed:
+			#	sfil.close() 
+			#exit(1)
 		prev_cellid = wrd[00]
 		if not quiet:
 			print('\n'),
