@@ -1,2 +1,44 @@
-Online software for MPCEX detector of PHENIX experiment at RHIC
+Slow control and test software for MPCEX detector of PHENIX experiment at RHIC. 
+All programs (except dqcapture.py) are executed on the Raspberry Pi's. 
+
+Usage:
+
+After power cycling of FEM:
+  ./onReboot.s
+
+Download of carrier boards on FEMa:
+  ./doall.sh a
+
+To enable FEMs:
+  ./femon.sh ab
+
+To disable FEMs:
+  ./femoff.sh ab
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+// Stress Test
+//
+Start Cell ID checker on two FEMs, it make sense to run them in a separate ssh 
+session. They do not interfere with other FEM operations although loads 
+the CPU significantly.
+  ./cellids.sh a
+
+Start stress test of both FEMs using their local GTM simulators:
+  ./gtm_scan.sh ab
+
+If gtm_scan.sh have been interrupted, then the GTM simulators will be left generating the latest pattern.
+To stop the GTM simulators:
+	./gtm_local ab -g stop 
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+FPGA device info of the FEMa:
+  ./jtag_flash.sh a
+
+Flash the latest FEMr1*.stp file into the FEMa:
+  ./jtag_flash.sh a program
+
+Flash the carrier board a0:
+  ./jtag_flash.sh a0 -f CARB_U1-r124.stp -p
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
 
