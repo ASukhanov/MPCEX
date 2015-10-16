@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # usage: ./dqcapture.sh options
 # Data recorder of the gigabit ethernet sream from MPCEX FEM
 #
