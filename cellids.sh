@@ -10,6 +10,7 @@ OPTIONS:
   -r N	repeat N times
   -v	verbose
   -d	print headers
+  -b    print next 1k chunk of data
 EOF
 }
 # defaults
@@ -19,6 +20,7 @@ REPEAT="1"
 ACTION="CELLIDS"
 ERRCnt="0"
 FEM="a"
+ITEM_IN_LINE="0"
 
 process_cmd()
 {
@@ -54,6 +56,8 @@ process_cmd()
                ;;
           esac
           fi
+          ITEM_IN_LINE=$((ii %= 32))
+          if [ $ITEM_IN_LINE -eq "0" ]; then printf "\n"; fi
         fi
     done
     if [ $ERR -ne "0" ]; then ((ERRCnt=$ERRCnt+1)); printf "ERR#$ERRCnt"; fi
@@ -63,11 +67,12 @@ process_cmd()
 
 if [ "$#" -lt "1" ]; then usage; exit 1; fi
 OPTIND=2        # skip first argument
-while getopts "r:v:dh" opt; do
+while getopts "r:v:dhb" opt; do
   case $opt in
     v)	VERB=$OPTARG;;
     r)	REPEAT=$OPTARG;;
     d)	ACTION="HEADER";;
+    b)  ACTION="DUMP_NEXT1K";;
     h)  usage; exit 0;;
     :)	echo "Option -$OPTARG requires an argument." >&2; exit 1;;
   esac
