@@ -17,6 +17,11 @@ ACTION HEADER =
 ACTION CELLIDS =
 ' print cell IDs
         DO_CELLIDS;
+
+ACTION DUMP_NEXT1K = 
+' print next 1k of data
+        DO_DUMP_NEXT1K;
+
 ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 DATA PARAMETERS;
@@ -24,7 +29,7 @@ BOOLEAN idcode_data[32*10];
 BOOLEAN irdata[10*32];
 INTEGER ii;
 ENDDATA;
-',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+',,,,,,,,,,,,,,,,,dump_cellids.stp,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 PROCEDURE DO_RUN USES PARAMETERS;
 IRSCAN 8, $22, CAPTURE irdata[7..0];
@@ -39,6 +44,18 @@ IRSCAN 8, $22, CAPTURE irdata[7..0];
 DRSCAN 32, $8000;
 DRSCAN 32, $C000;
 for ii = 1 to 16 step 1;
+DRSCAN 32, $C000, CAPTURE idcode_data[31..0];
+EXPORT "",idcode_data[15..0];
+next ii;
+ENDPROC;
+',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+PROCEDURE DO_DUMP_NEXT1K USES PARAMETERS;
+IRSCAN 8, $22, CAPTURE irdata[7..0];
+'Need 3 DRSCANs to change the address
+'DRSCAN 32, $8000;
+'DRSCAN 32, $C000;
+for ii = 1 to 1024 step 1;
 DRSCAN 32, $C000, CAPTURE idcode_data[31..0];
 EXPORT "",idcode_data[15..0];
 next ii;
@@ -112,45 +129,5 @@ EXPORT "SVX11.32", idcode_data[15..0];
 'release event
 DRSCAN 32, $0000, CAPTURE idcode_data[31..0];
 DRSCAN 32, $0000, CAPTURE idcode_data[31..0];
-ENDPROC;
-',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-ACTION	TRANS = DO_TRANS;
-PROCEDURE DO_TRANS USES PARAMETERS;
-for ii = 1 to 1 step 1;
-IRSCAN 8, $22, CAPTURE irdata[7..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-DRSCAN 32, $E000, CAPTURE idcode_data[31..0];
-EXPORT "Shifted Out:", idcode_data[31..0];
-next ii;
 ENDPROC;
 ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
