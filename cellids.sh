@@ -13,55 +13,53 @@ OPTIONS:
   -b    print next 1k chunk of data
 EOF
 }
+#version 2 2015-10-24
+
 # defaults
 CMD=""
-VERB="0"
+VERB="1"
 REPEAT="1"
-ACTION="CELLIDS"
+ACTION="DUMP_CELLIDS"
 ERRCnt="0"
 FEM="a"
 ITEM_IN_LINE="0"
+
+CELLID=""
 
 process_cmd()
 {
   if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
 
   # need lastpipe bash option, othervise the following subshell will not change the variables
-  shopt -s lastpipe
+  #shopt -s lastpipe
   eval $CMD |
   {
     ii="0"
     ERR="0"
-    while read STR
+
+    # first line: comment
+    read STR
+    if [ $VERB -eq "3" ]; then echo $STR; fi;
+    if [ "${STR:15:7}" != "CellIDs" ]; then echo "ERROR. Unexpected STAPL output: $STR"; exit; fi
+
+    #second line: 18 of CellId's
+    read STR2
+    #third line: 6 CellIds and event number
+    read STR3
+    STR=$STR2$STR3
+    if [ $VERB -eq "3" ]; then echo $STR; fi;
+    CELLID=${STR:0:4}
+    for ii in {1..23}
     do
-      if [ $VERB -eq "3" ]; then echo $STR; fi;
-        STR=${STR#*value = }    #
-        if [ "${STR:0:3}" == "HEX" ]; then
-          ((ii=$ii+1))
-          REG=${STR:4:8}
-          #printf "$ii,$REG\n"
-          if [ $ACTION == "HEADER" ]; then
-            printf "$REG ";
-          else
-          case $ii in
-            "1") printf "$FEM:ev $REG: ";;
-            "2") PATTERN=$REG; if [ $VERB -gt "0" ]; then printf "$REG "; fi;;
-            *) if [ $VERB -gt "0" ]; then printf "$REG"; fi;
-               if [ $REG != $PATTERN ]; then
-                 ERR="1"
-                 if [ $VERB -gt "0" ]; then printf "_"; fi;
-                 #if [ $VERB -gt "0" ]; then printf "ERR#$ERRCnt: $REG!=$PATTERN\n";fi;
-               else if [ $VERB -gt "0" ]; then printf " "; fi;
-               fi
-               ;;
-          esac
-          fi
-          ITEM_IN_LINE=$((ii %= 32))
-          if [ $ITEM_IN_LINE -eq "0" ]; then printf "\n"; fi
-        fi
+      if [ "${STR:$ii*4:4}" != $CELLID ]; then 
+        ERR="1"
+        if [ $VERB -gt "1" ]; then echo "ERROR. CellId[$ii] ${STR:$ii*4:4} != $CELLID"; fi
+      fi
     done
-    if [ $ERR -ne "0" ]; then ((ERRCnt=$ERRCnt+1)); printf "ERR#$ERRCnt"; fi
-    printf "\n"
+    if [ $ERR -ne "0" ]; then 
+      ((ERRCnt=$ERRCnt+1)); 
+      if [ $VERB -gt "0" ]; then echo "$FEM:ev ${STR:24*4:4}: ERR#$ERRCnt"; fi
+    fi
   }
 }
 
@@ -71,14 +69,14 @@ while getopts "r:v:dhb" opt; do
   case $opt in
     v)	VERB=$OPTARG;;
     r)	REPEAT=$OPTARG;;
-    d)	ACTION="HEADER";;
+    d)	ACTION="DUMP_HEADER";;
     b)  ACTION="DUMP_NEXT1K";;
     h)  usage; exit 0;;
     :)	echo "Option -$OPTARG requires an argument." >&2; exit 1;;
   esac
 done
 
-CMD="StaplPlayer -a$ACTION dump_cellids.stp"
+CMD="StaplPlayer -a$ACTION dumpfem.stp"
 
 FEM=${1:0:1}
 case "$1" in
@@ -87,6 +85,7 @@ case "$1" in
   *) 	usage; exit 2;;
 esac
 
+shopt -s lastpipe
 while [ "$REPEAT" -gt "0" ];
 do
   ((REPEAT-=1))
@@ -94,6 +93,6 @@ do
   #echo "ERRCnt=$ERRCnt"
 done
 #echo "final ERRCnt=$ERRCnt"
-#if [ $ERRCnt -gt "0" ]; then echo "ERRORS $ERRCnt";
-#else echo "OK"
-#fi
+if [ $ERRCnt -gt "0" ]; then echo "ERRORS $ERRCnt";
+  else echo "OK"
+fi
