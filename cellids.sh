@@ -39,27 +39,34 @@ process_cmd()
 
     # first line: comment
     read STR
-    if [ $VERB -ge "3" ]; then echo $STR; fi;
-    if [ "${STR:15:7}" != "CellIDs" ]; then echo "ERROR. Unexpected STAPL output: $STR"; exit; fi
-
-    #second line: 18 of CellId's
-    read STR2
-    #third line: 6 CellIds and event number
-    read STR3
-    STR=$STR2$STR3
-    if [ $VERB -ge "2" ]; then echo $STR; fi;
-    CELLID=${STR:0:4}
-    for ii in {1..23}
-    do
-      if [ "${STR:$ii*4:4}" != $CELLID ]; then 
-        ERR="1"
-        if [ $VERB -ge "3" ]; then echo "ERROR. CellId[$ii] ${STR:$ii*4:4} != $CELLID"; fi
-      fi
-    done
-    if [ $ERR -ne "0" ]; then 
-      ((ERRCnt=$ERRCnt+1)); 
-      if [ $VERB -gt "0" ]; then echo "$FEM:ev ${STR:24*4:4}: ERR#$ERRCnt"; fi
-    fi
+    if [ $VERB -ge "3" ]; then echo "$FEM:$STR";fi;
+    case "${STR:15:6}" in
+      "Header")
+        STR=${STR#*HEX} 
+        echo "$FEM:$STR"
+        ;;
+      "CellID")
+        #second line: 18 of CellId's
+        read STR2
+        #third line: 6 CellIds and event number
+       read STR3
+        STR=$STR2$STR3
+        if [ $VERB -ge "2" ]; then echo "$FEM:$STR"; fi;
+        CELLID=${STR:0:4}
+        for ii in {1..23}
+        do
+          if [ "${STR:$ii*4:4}" != $CELLID ]; then
+            ERR="1"
+            if [ $VERB -ge "3" ]; then echo "$FEM:ERROR. CellId[$ii] ${STR:$ii*4:4} != $CELLID"; fi
+          fi
+        done
+        if [ $ERR -ne "0" ]; then
+          ((ERRCnt=$ERRCnt+1));
+          if [ $VERB -gt "0" ]; then echo "$FEM:ev ${STR:24*4:4}: ERR#$ERRCnt"; fi
+        fi
+        ;;
+      *) echo "$FEM:ERROR. Unexpected STAPL output: $STR"; exit;; 
+    esac
   }
 }
 
