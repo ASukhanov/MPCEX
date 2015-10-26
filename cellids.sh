@@ -28,7 +28,7 @@ CELLID=""
 
 process_cmd()
 {
-  if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
+  if [ $VERB -ge "3" ]; then echo "Executing: $CMD"; fi
 
   # need lastpipe bash option, othervise the following subshell will not change the variables
   #shopt -s lastpipe
@@ -39,7 +39,7 @@ process_cmd()
 
     # first line: comment
     read STR
-    if [ $VERB -eq "3" ]; then echo $STR; fi;
+    if [ $VERB -ge "3" ]; then echo $STR; fi;
     if [ "${STR:15:7}" != "CellIDs" ]; then echo "ERROR. Unexpected STAPL output: $STR"; exit; fi
 
     #second line: 18 of CellId's
@@ -47,13 +47,13 @@ process_cmd()
     #third line: 6 CellIds and event number
     read STR3
     STR=$STR2$STR3
-    if [ $VERB -eq "3" ]; then echo $STR; fi;
+    if [ $VERB -ge "2" ]; then echo $STR; fi;
     CELLID=${STR:0:4}
     for ii in {1..23}
     do
       if [ "${STR:$ii*4:4}" != $CELLID ]; then 
         ERR="1"
-        if [ $VERB -gt "1" ]; then echo "ERROR. CellId[$ii] ${STR:$ii*4:4} != $CELLID"; fi
+        if [ $VERB -ge "3" ]; then echo "ERROR. CellId[$ii] ${STR:$ii*4:4} != $CELLID"; fi
       fi
     done
     if [ $ERR -ne "0" ]; then 
