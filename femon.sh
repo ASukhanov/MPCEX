@@ -74,14 +74,14 @@ if [ $VERB -eq "1" ]; then echo "$HOSTNAME: Executing $CMD1; $CMD2; on FEM a and
 
 # Setup FEM and start sequencer on FEMa
 if [[ $FEM == *"a"* ]]; then
-  if [ $VERB -ge "0" ]; then echo "Executing: $CMD1; $CMD2"; fi
+  if [ $VERB -gt "0" ]; then echo "Executing: $CMD1; $CMD2"; fi
   eval $CMD1 > /dev/null
   eval $CMD2 > /dev/null
 fi
 
 # and on FEMb
 if [[ $FEM == *"b"* ]]; then
-  if [ $VERB -ge "0" ]; then echo "Executing $CMD1 -g; $CMD2 -g"; fi
+  if [ $VERB -gt "0" ]; then echo "Executing: $CMD1 -g; $CMD2 -g"; fi
   eval $CMD1 -g > /dev/null
   eval $CMD2 -g > /dev/null
 fi
