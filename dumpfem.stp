@@ -77,9 +77,26 @@ IRSCAN 8, $22, CAPTURE irdata[7..0];
 'Need 3 DRSCANs to change the address
 'DRSCAN 32, $8000;
 'DRSCAN 32, $C000;
-for ii = 1 to 1024 step 1;
+for ii = 1 to 64 step 1;
+'DRSCAN 32, $C000, CAPTURE idcode_data[31..0];
+'EXPORT "",idcode_data[15..0];
 DRSCAN 32, $C000, CAPTURE idcode_data[31..0];
-EXPORT "",idcode_data[15..0];
+DRSCAN 32, $C000, CAPTURE idcode_data[47..16];
+DRSCAN 32, $C000, CAPTURE idcode_data[63..32];
+DRSCAN 32, $C000, CAPTURE idcode_data[79..48];
+DRSCAN 32, $C000, CAPTURE idcode_data[95..64];
+DRSCAN 32, $C000, CAPTURE idcode_data[111..80];
+DRSCAN 32, $C000, CAPTURE idcode_data[127..96];
+DRSCAN 32, $C000, CAPTURE idcode_data[143..112];
+DRSCAN 32, $C000, CAPTURE idcode_data[159..128];
+DRSCAN 32, $C000, CAPTURE idcode_data[175..144];
+DRSCAN 32, $C000, CAPTURE idcode_data[191..160];
+DRSCAN 32, $C000, CAPTURE idcode_data[207..176];
+DRSCAN 32, $C000, CAPTURE idcode_data[223..192];
+DRSCAN 32, $C000, CAPTURE idcode_data[239..208];
+DRSCAN 32, $C000, CAPTURE idcode_data[255..224];
+DRSCAN 32, $C000, CAPTURE idcode_data[271..240];
+EXPORT "Payload",idcode_data[255..0];
 next ii;
 ENDPROC;
 ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
