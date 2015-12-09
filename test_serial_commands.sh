@@ -31,7 +31,7 @@ case "${1:0:1}" in
 esac
 
 OPTIND=2        # skip first argument
-while getopts ":v:t1f:" opt; do
+while getopts "v:" opt; do
   #echo "opt=$opt"
   case $opt in
     v)
@@ -61,11 +61,13 @@ else usage; exit 1;
 fi
 if [ $VERB -ge "2" ]; then echo "CB=$CB, Select mask = $SM"; fi
 
-if [ $VERB -ge "2" ]; then echo executing: Play_stapl.py $FEM i10 50100000 00010${SM:0:1}${CB:0:1}0; fi
-Play_stapl.py $FEM i10 50100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset carriers, set trigger and clock sources
-./carrier_config.sh ${1:0:1} -b000000 -d -p9
-if [ $VERB -ge "2" ]; then echo executing Play_stapl.py $FEM i1c $SM; fi
-Play_stapl.py $FEM i1c $SM > /dev/null; # select carrier board 0
+CMD="Play_stapl.py $FEM i10 00010${SM:0:1}${CB:0:1}0"
+if [ $VERB -ge "2" ]; then echo "executing: $CMD"; fi
+eval "$CMD > /dev/null"
+
+CMD="Play_stapl.py $FEM i1c $SM"
+if [ $VERB -ge "2" ]; then echo "executing: $CMD"; fi
+eval "$CMD > /dev/null"
 
 GNERR=0
 #for BIT in 01 02 04 08 10 20 40 80 03 06 0C 30 60 c0 A0 E0 30 28 20 B0 A8 B8 18; do
@@ -73,11 +75,14 @@ for BIT in A0 E0 30 28 20 B0 A8 B8 18; do # L1, PARst, Dig, PR2, FEClk, L1+Dig, 
 #for BIT in B0; do 
 #for BIT in 00 A8; do
   NERR=0
-  if [ $VERB -ge "2" ]; then echo Play_stapl.py i16 1ff00000 000000$BIT 00120000 AFF00000; fi
-  if [ $VERB -ge "1" ]; then echo pattern $BIT loaded, check 32 times:;fi
-  Play_stapl.py $FEM i16 1ff00000 000000$BIT 00120000 AFF00000 > /dev/null; # load sequencer with single command and start it
-  if [ $VERB -ge "2" ]; then echo executing: Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0; fi
-  Play_stapl.py $FEM i10 00100000 00010${SM:0:1}${CB:0:1}0 > /dev/null; # reset carriers, set trigger and clock sources
+
+  CMD="Play_stapl.py $FEM i16 1ff00000 000000$BIT 00120000 AFF00000" #load sequencer with single command and start it
+  if [ $VERB -ge "2" ]; then echo "executing: $CMD"; fi
+  if [ $VERB -ge "1" ]; then echo "pattern $BIT loaded, check 32 times:";fi
+  eval "$CMD > /dev/null"
+  CMD="Play_stapl.py $FEM i10 00010${SM:0:1}${CB:0:1}0" # reset carriers, set trigger and clock sources
+  if [ $VERB -ge "2" ]; then echo "executing: $CMD"; fi
+  eval "$CMD > /dev/null"
 
   # The following is not necessary as sequencer is running permanently
   #if [ $VERB -ge "2" ]; then echo executing: StaplPlayer $FEM -aTrans one_sequencer_cycle.stp; fi
