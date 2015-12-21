@@ -23,6 +23,7 @@ EOF
 
 #version 2 2015-08-18. corrected -f behavior
 #version 3 2015-10-23. -m option added
+#version v4 2015-12-08. CMD="Play_stapl.py i10 50100000 00000000 $SP_OPTION" # clear all carriers, GTM
 
 VERB="0"
 DOWNLOAD=0
@@ -56,6 +57,11 @@ case "${1:0:1}" in
   "a")  SP_OPTION="";;
   *) usage; exit;;
 esac
+
+#v4
+CMD="Play_stapl.py i10 50100000 00000000 $SP_OPTION" # clear all carriers, GTM local, CB0 master, BClk internal
+echo "executing: $CMD"
+eval $CMD > /dev/null
 
 echo "executing ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d -p8"
 ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d -p8;	# FEMODE=0, SVX downloading enabled
