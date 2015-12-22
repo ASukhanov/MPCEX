@@ -22,7 +22,7 @@ EOF
 NOPLAY=0
 
 # CSR10: Local control (10000), All chains enabled (f00), triggers disabled (c0) , BClk (8)
-CSR10_bits_19_00=10fc0
+CSR10_bits_19_00=14fc0
 LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
 FILE_ALL="svxall_gain_high_drive_low.stp"
 FILE_ONE="svx1.stp"

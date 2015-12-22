@@ -1,29 +1,21 @@
 #!/bin/bash
-# Print CSR of the cartrier boards
-# version vD1
+usage()
+{
+cat << EOF
+usage: $0 [a/b]
+
+Print carrier board registers connected to FEMa,b or to both.
+
+EOF
+}
+# version vD2 2015-12-21: no arguments - show both carriers on FEMs
 
 SP_OPTION=""
+FEM="a"
 
-USAGE="usage: $0 [a/b]"
-LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
-
-if [ "$#" -lt "0" ]; then echo $USAGE; exit; fi
-case "$1" in
-  "b"|"-g")
-    SP_OPTION="-g"
-    ;;
-  "a")
-    SP_OPTION=""
-    ;;
-  *)
-    echo $USAGE
-    exit
-    ;;
-esac
-
-#CMD="Play_stapl.py $SP_OPTION i1c $CBMASK > /dev/null; Play_stapl.py -c $SP_OPTION i32 0 i33 0;"
-
-echo "''''''''''''''''''''''''''''''' $HOSTNAME.$1 '''''''''''''''''''''''''''''''''"
+process_cmd()
+{
+echo "''''''''''''''''''''''''''''''' $HOSTNAME$1$FEM '''''''''''''''''''''''''''''''''"
 CB=0
 for i in 1 2 4 8; do
   Play_stapl.py $SP_OPTION i1c $i > /dev/null;
@@ -53,7 +45,9 @@ for i in 1 2 4 8; do
           let "PR2 = ($i33)&16#FFF"
           let "PAR = ($i33>>16)&16#FF"
           let "L0 =  ($i33>>24)&16#FF"
-          printf "FM=$FEMODE PROut=$PROUT CMD=%02x PR2=%03x PAR=%02x L0=%02x " $LAST_CMD $PR2 $PAR $L0
+          let "FEClkCnt = ($i32>>28)&0xF"
+          let "BEClkCnt = ($i33>>12)&0xF"
+          printf "FM=$FEMODE PO=$PROUT CMD=%02x PR2=%03x PAR=%02x L0=%02x FC=%01x BC=%01x " $LAST_CMD $PR2 $PAR $L0 $FEClkCnt $BEClkCnt
           if [ $SIM -eq "1" ]; then printf "Sim $BYPASS, ";
           else 
             if [ $CN -eq "1" ]; then printf "CN, "; fi
@@ -68,4 +62,14 @@ for i in 1 2 4 8; do
   )
   let "CB = $CB + 1"
 done
-echo ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, $HOSTNAME.$1 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+#echo ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, $HOSTNAME$1$FEM ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+}
+
+case "$1" in
+  "a") SP_OPTION=""; FEM="a"; process_cmd;;
+  "b") SP_OPTION="-g"; FEM="b"; process_cmd;;
+  *)
+     SP_OPTION=""; FEM="a"; process_cmd;
+     SP_OPTION="-g"; FEM="b"; process_cmd;
+  ;;
+esac

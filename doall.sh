@@ -31,6 +31,7 @@ SEQUENCER_MODIFIED=0
 
 # Standard settings, to be used at PHENIX
 FEM_SETTING="Play_stapl.py i10 50000F08" # default. All CBs will be downloaded simultaneously, CB0 - master
+
 FILE="svx6.stp"
 CARRIER_OPTIONS="-b000000" # no bypassed modules
 
@@ -59,7 +60,7 @@ case "${1:0:1}" in
 esac
 
 #v4
-CMD="Play_stapl.py i10 50100000 00000000 $SP_OPTION" # clear all carriers, GTM local, CB0 master, BClk internal
+CMD="Play_stapl.py i10 50100000 00000000 $SP_OPTION" # clear all carriers, GTM local, CB0 master, BClk internal, Enable BClk for carriers
 echo "executing: $CMD"
 eval $CMD > /dev/null
 
