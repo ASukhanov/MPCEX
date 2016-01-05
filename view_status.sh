@@ -11,6 +11,8 @@ OPTIONS:
   -v N  verbosity
 EOF
 }
+#version 2015-12-24 for FEMr1-v20E: if [ $((CSR17 & 16#f007ffff)) -ne $((16#20050800)) ]; then printf "ERR:Sequencer wrong, "; fi
+
 # defaults
 CSR20="00000000"
 CSR21="00000000"
@@ -49,7 +51,7 @@ if [ $VERB -ne "0" ]; then
   ((PMASK = ($CSR14&1) | (($CSR14>>10)&2) | (($CSR14>>17)&4) | (($CSR14>>23)&8) ))
   printf "PROuts:%1x:%1x%1x%1x%1x. " $PMASK $(((CSR14>>24)&7)) $(((CSR14>>16)&7)) $(((CSR14>>8)&7)) $(((CSR14)&7))
   if [ $((CSR12 & 16#00000080)) -eq 0 ] ;       then printf "ERR:Clock, "; fi
-  if [ $((CSR17 & 16#f00fffff)) -ne $((16#20050800)) ];	then printf "ERR:Sequencer wrong, "; fi
+  if [ $((CSR17 & 16#f007ffff)) -ne $((16#20050800)) ];	then printf "ERR:Sequencer wrong, "; fi
   if [ $((CSR17 & 16#00f00000)) -ne 0 ] ; 	then printf "ATT:Blocked L1s, "; fi
   if [ $((CSR20 & 16#08000000)) -ne 0 ] ;	then printf "ERR:Halt, "; fi
   if [ $((CSR20 & 16#04000000)) -ne 0 ] ;       then printf "ERR:Overflow, "; fi
