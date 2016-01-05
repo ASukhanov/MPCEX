@@ -14,6 +14,7 @@ OPTIONS:
 EOF
 }
 #version 2 2015-10-24
+#version 2 2016-01-05  echo "   b10/b32/b10/b32/CId/CId/PL1/H  /EBC/ PT/ V / BC/ FN/
 
 # defaults
 CMD=""
@@ -38,14 +39,16 @@ process_cmd()
     ERR="0"
 
     # first line: comment
-    while 
+    while
     read STR
     do
     if [ $VERB -ge "3" ]; then echo "$FEM:$STR";fi;
     case "${STR:15:6}" in
       "Header")
-        STR=${STR#*HEX} 
+        STR=${STR#*HEX}
         echo "$FEM:$STR"
+        #        02020202030303030101010103CA2FFF0000000EF82A00194F00F0C200019046"
+        echo "   b10/b32/b10/b32/CId/CId/PL1/H  /EBC/ PT/ V / BC/ FN/   /S_D/ EV/"
         break
         ;;
       "Payloa")
