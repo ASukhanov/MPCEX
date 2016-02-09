@@ -25,8 +25,8 @@ EOF
 #version 3 2015-10-23. -m option added
 #version v4 2015-12-08. CMD="Play_stapl.py i10 50100000 00000000 $SP_OPTION" # clear all carriers, GTM
 
-VERB="0"
-DOWNLOAD=0
+VERB=1
+DOWNLOAD=1
 SEQUENCER_MODIFIED=0
 
 # Standard settings, to be used at PHENIX
