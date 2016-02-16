@@ -73,6 +73,7 @@ if [ $VERB -ne "0" ]; then
   #if [ $((CSR20 & 16#01000000)) -ne 0 ] ;       then printf "Readout, "; fi
   #FIFO=$(((CSR20 >> 16)&15))
   #if [ $FIFO -ne 3 ]; then printf "FIFO=%1x, " $FIFO; fi
+  if [ $((CSR24 & 16#04000000)) -eq 0 ] ; then printf "ERR:No GTM Link, "; fi
   printf "\n"
 fi
 fi
