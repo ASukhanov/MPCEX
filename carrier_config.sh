@@ -7,11 +7,11 @@ usage: $0 [a/b][i] cn/sim/bypass/reset mask options
 Reconfigure carrier boards.
 
 OPTIONS:
-  -d Drop FEMode on SVXs, this will enable for further downloading
-  -n Channel Number mode
-  -s N	Simulate N SVx4
-  -b M  Bypass modules, M is the binary bypassing mask
-  -v Verbose
+  -d Drop FEMode on SVXs, this will enable the carrier for further downloading.
+  -n Channel Number mode.
+  -s N	Simulate N SVx4.
+  -b M  Bypass modules, M is the binary bypassing mask.
+  -v Verbose [0:1]. Default $VERB.
   -p P	Probe. Connect one of the signals to SDI line for probing on FEM.
 
 EXAMPLES:
@@ -23,6 +23,8 @@ $0 a -s 12: 	set all carriers of FEM.a for generating fake data of 12 SVXs"
 $0 b		default configuration of all carriers of FEM.b, ready for data taking
 EOF
 }
+#version 2 2016-04-05.
+
 probing ()
 {
 case $PROBE in
