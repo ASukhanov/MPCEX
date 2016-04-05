@@ -1,9 +1,4 @@
 #!/bin/bash
-VERB="1"
-FILE="CARB_U1-vE1.stp"
-ACTION="DEVICE_INFO"
-GPIO="8"  # GPIO line of the RPi to switch between FEMs
-
 usage()
 {
 cat << EOF
@@ -17,11 +12,16 @@ OPTIONS:
   -r    read/verify FPGA
 EOF
 }
+# version v2  2016-02-19. Using environment variables, defined in ~/.basrc
+
+VERB="1"
+FILE="CARB_U1-vE1.stp"
+ACTION="DEVICE_INFO"
 
 FILE=$(ls -t /phenixhome/phnxrc/MPCEX/CAR* | head -1)
 
 OPTIND=2        # skip first argument
-while getopts ":v:f:dhpr" opt; do
+while getopts "v:f:dhpr" opt; do
   case $opt in
     f) FILE=$OPTARG;;
     v) VERB=$OPTARG;;
@@ -36,8 +36,8 @@ done
 #select FEM
 FEM=${1:0:1}
 case "$FEM" in
-  "b") SP_OPTION="-g"; GPIO="7";;
-  "a") SP_OPTION=""; GPIO="8";;
+  "b") SP_OPTION="-g"; GPIO=$GPIO_JTAG1_CS;;
+  "a") SP_OPTION=""; GPIO=$GPIO_JTAG0_CS;;
   *)echo "FEM should be a or b"; usage; exit 1;;
 esac
 
@@ -56,7 +56,7 @@ CMD="gpio -g write $GPIO 1"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD
 
-CMD="StaplPlayer $SP_OPTION -a$ACTION $FILE"
+CMD="StaplPlayer $SP_OPTION $SP_OPTION_PASSTHROUGH -a$ACTION $FILE"
 if [ $VERB -ge "1" ]; then echo "Executing: $CMD"; fi
 eval $CMD
 
