@@ -14,6 +14,8 @@ PORT = 1792 # FEM port
 
 DATSIZE = 7000
 data = bytearray(DATSIZE);
+
+sender_prev=''
  
 # Datagram (udp) socket
 try :
@@ -39,6 +41,9 @@ while 1:
     datlen, sender = s.recvfrom_into(data, DATSIZE)
     if not data: 
         break
+    if (sender != sender_prev):
+      sender_prev = sender
+      print('Data from '+str(sender))
     print('l:'+str(datlen)+' h:'+binascii.hexlify(data[:20])+' d:'+binascii.hexlify(data[20:30])+' t:'+binascii.hexlify(data[datlen-8:datlen]))
 
 s.close()
