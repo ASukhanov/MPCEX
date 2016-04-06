@@ -11,10 +11,12 @@ OPTIONS:
   -v N  verbosity
 EOF
 }
+#version 2015-12-24 for FEMr1-v20E: if [ $((CSR17 & 16#f007ffff)) -ne $((16#20050800)) ]; then printf "ERR:Sequencer wrong, "; fi
+#version v2 2016-02-06
+
 # defaults
 CSR20="00000000"
 CSR21="00000000"
-#SKIP="1"        # skip every 2nd event, good for ethernet
 SKIP="0"	# do not skip events
 VERB=7
 STATUS=""
@@ -36,6 +38,9 @@ do
           if [ $ii -eq "3" ]; then CSR14=$((16#$REG)); fi
           if [ $ii -eq "4" ]; then CSR17=$((16#$REG)); fi
           if [ $ii -eq "5" ]; then CSR20=$((16#$REG)); fi
+          if [ $ii -eq "6" ]; then CSR21=$((16#$REG)); fi
+          if [ $ii -eq "7" ]; then CSR24=$((16#$REG)); fi
+          if [ $ii -eq "8" ]; then CSR25=$((16#$REG)); fi
           if [ $((VERB & 4)) -ne "0" ]; then
           printf "$REG "; fi
         fi
@@ -48,16 +53,27 @@ if [ $((VERB & 1)) -ne "0" ]; then
 if [ $VERB -ne "0" ]; then
   printf "Ev=0x%04x: " $((CSR20 & 16#ffff))
   ((PMASK = ($CSR14&1) | (($CSR14>>10)&2) | (($CSR14>>17)&4) | (($CSR14>>23)&8) ))
-  printf "PROuts:%1x:%1x%1x%1x%1x. " $PMASK $(((CSR14>>24)&7)) $(((CSR14>>16)&7)) $(((CSR14>>8)&7)) $(((CSR14)&7))
-  if [ $((CSR12 & 16#00000080)) -eq 0 ] ;       then printf "ERR:Clock, "; fi
-  if [ $((CSR17 & 16#f00fffff)) -ne $((16#20050800)) ];	then printf "ERR:Sequencer wrong, "; fi
-  if [ $((CSR17 & 16#00f00000)) -ne 0 ] ; 	then printf "ATT:Blocked L1s, "; fi
-  if [ $((CSR20 & 16#08000000)) -ne 0 ] ;	then printf "ERR:Halt, "; fi
-  if [ $((CSR20 & 16#04000000)) -ne 0 ] ;       then printf "ERR:Overflow, "; fi
-  if [ $((CSR20 & 16#02000000)) -ne 0 ] ;       then printf "ERR:Timeout, "; fi
-  if [ $((CSR20 & 16#01000000)) -ne 0 ] ;       then printf "Readout, "; fi
-  FIFO=$(((CSR20 >> 16)&15))
-  if [ $FIFO -ne 3 ]; then printf "FIFO=%1x, " $FIFO; fi
+  printf "PROuts:%1x:%1x%1x%1x%1x=%1x. " $PMASK $(((CSR14>>24)&7)) $(((CSR14>>16)&7)) $(((CSR14>>8)&7)) $(((CSR14)&7)) $((CSR20 & 7))
+  if [ $((CSR20 & 16#04000000)) -ne 0 ] ; then printf "ATT:Overflow, "; fi
+  if [ $((CSR20 & 16#00F00000)) -ne 0 ] ; then printf "ATT:Aborts#%0i," $(((CSR20>>20)&15)); fi
+  if [ $((CSR12 & 16#00000080)) -eq 0 ] ; then printf "ERR:Clock, "; fi
+  if [ $((CSR17 & 16#2007ffff)) -ne $((16#20050800)) ];	then printf "ERR:Sequencer wrong, "; fi
+  if [ $((CSR17 & 16#00f00000)) -ne 0 ] ; then printf "ERR:Blocked L1s, "; fi
+  if [ $((CSR20 & 16#08000000)) -ne 0 ] ; then printf "ERR:Halt, "; fi
+  if [ $((CSR20 & 16#02000000)) -ne 0 ] ; then printf "ERR:Timeout, "; fi
+  #if [ $((CSR20 & 16#F)) -ne $((CSR24 & 16#F)) ] ; then printf "ERR:GTMEV, "; fi
+
+  # check for missing Dig
+  if [ $((CSR20 & 16#01000000)) -eq 0 ] ; #check only when the SVXs are not active
+  then if [ $(((CSR20>>28)&15)) -ne $(((CSR20)&15)) ] ;
+    then printf "ERR:Dig %01x!=%01x" $(((CSR20>>28)&15)) $(((CSR20)&15)); fi;
+  fi
+
+  # the rest is not important
+  #if [ $((CSR20 & 16#01000000)) -ne 0 ] ;       then printf "Readout, "; fi
+  #FIFO=$(((CSR20 >> 16)&15))
+  #if [ $FIFO -ne 3 ]; then printf "FIFO=%1x, " $FIFO; fi
+  if [ $((CSR24 & 16#04000000)) -eq 0 ] ; then printf "ERR:No GTM Link, "; fi
   printf "\n"
 fi
 fi
@@ -95,6 +111,7 @@ fi
 #fi
 
 CMD="Play_stapl.py i11 0 i12 0 i14 0 i17 0 i20 $SKIP i21 0 i24 0 i25 0"
+#CMD="Play_stapl.py i11 0 i12 0 i14 0 i17 0001FF00 i20 $SKIP i21 0 i24 0 i25 0" #v2 disabled no PRD2_ongap, skip 256 gaps
 
 case "$1" in
   "b")	CMD="$CMD -g"; process_cmd;;

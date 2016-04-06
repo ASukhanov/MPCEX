@@ -21,6 +21,7 @@ GENTYPE:
         en            start periodic trigger generator
         rand          start pseudo random trigger generator
         stop          stop generator, default
+        pause         disable triggers
 
 EXAMPLE:
 	short run with random pulse generation:
@@ -62,11 +63,11 @@ INTERVAL=4	# 13.4 us default, four of L1s during SVX busy = 46uS
 if [ "$#" -lt "1" ]; then usage; exit; fi
 
 FEM=$1
-#case "$1" in
-#  "b")	SP_OPTION="-g";;
-#  "a")	SP_OPTION="";;
-#  *) 	usage; exit 1;;
-#esac
+case $FEM in
+  "b")	SP_OPTION="-g";;
+  "a")	SP_OPTION="";;
+  *) 	usage; exit 1;;
+esac
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 #	Execute the command
@@ -74,17 +75,28 @@ execmd () {
 case "$GENTYPE" in
   "en") echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"
         CMDRUN="3";;
-  "rand")     echo "Random triggering"; CMDRUN="1";;
-  *)
-        if [[ $FEM == *"a"* ]]; then Play_stapl.py i26 0 >> /dev/null; fi
-        if [[ $FEM == *"b"* ]]; then Play_stapl.py -g i26 0 >> /dev/null; fi 
-        echo "Generator stopped on FEM$FEM";
-        exit;;
+  "rand") CMDRUN="1"; echo "Random triggering";;
+  "pause") CMDRUN="5";; #bit 18 to disable triggers
+  *)    CMDRUN="5"; GENTYPE="gstop";;
 esac
 #let "NTRIGS = $NTRIGS-1"
 let "NTRIGS = $NTRIGS" # for firmware version after FEM-v1D2
 let "DRSCAN = $INTERVAL<<20 | $CMDRUN<<16 | $NTRIGS<<12 | $DELAY<<4 | $FREQ"
 DRSCAN=`printf "%08x\n" $DRSCAN`
+
+CMD="Play_stapl.py $SP_OPTION i26 $DRSCAN"
+if [ $VERB -gt "0" ]; then echo "Executing: $CMD"; fi
+eval $CMD >> /dev/null
+
+if [ $GENTYPE == "gstop" ]; then # Run can be stopped now
+  echo "Local GTM stopped, ";
+  #CMD="Play_stapl.py $SP_OPTION i26 40000 "; # triggers disabled
+  CMD="Play_stapl.py $SP_OPTION i26 00000 ";
+  if [ $VERB -gt "0" ]; then echo "Executing: $CMD"; fi
+  eval $CMD >> /dev/null;
+fi
+
+exit
 
 if [[ $FEM == *"a"* ]]; then
   CMD="Play_stapl.py i26 $DRSCAN"
@@ -96,9 +108,9 @@ if [[ $FEM == *"b"* ]]; then
   if [ $VERB -gt "0" ]; then echo "Executing: $CMD"; fi
   eval $CMD >> /dev/null
 fi
+
 }
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-
 OPTIND=2        # skip first arguments
 while getopts "p:t:i:d:c:g:hv:" opt; do
   #echo "opt=$opt"

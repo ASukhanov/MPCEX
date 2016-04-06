@@ -11,6 +11,7 @@ OPTIONS:
   -h	help
 EOF
 }
+# Version v2 2016-02-03 GAP removed
 
 FEM=""  
 QUIET="1"

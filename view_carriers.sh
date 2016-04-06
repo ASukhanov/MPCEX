@@ -1,34 +1,42 @@
 #!/bin/bash
-# Print CSR of the cartrier boards
-# version vD1
+usage()
+{
+cat << EOF
+usage: $0 [a/b] options
+
+Print carrier board registers connected to FEMa,b or to both.
+
+OPTIONS:
+  -v N  verbosity, default:$VERB
+
+EOF
+}
+# version v02 2015-12-21: no arguments - show both carriers on FEMs
+# version v03 2016-04-01: removed () in command output processing, getopts.
 
 SP_OPTION=""
+FEM="a"
+VERB=0
+#VERB=1
+PIPE="> /dev/null"
+if [ $VERB -ne "0" ]; then PIPE=""; fi
 
-USAGE="usage: $0 [a/b]"
-LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
+PSDIR='' # default
+#PSDIR="~/work/StaplPlayer/" #for debugging
+#echo "GPIO_JTAG1_CS=$GPIO_JTAG1_CS"
 
-if [ "$#" -lt "0" ]; then echo $USAGE; exit; fi
-case "$1" in
-  "b"|"-g")
-    SP_OPTION="-g"
-    ;;
-  "a")
-    SP_OPTION=""
-    ;;
-  *)
-    echo $USAGE
-    exit
-    ;;
-esac
-
-#CMD="Play_stapl.py $SP_OPTION i1c $CBMASK > /dev/null; Play_stapl.py -c $SP_OPTION i32 0 i33 0;"
-
-echo "''''''''''''''''''''''''''''''' $HOSTNAME.$1 '''''''''''''''''''''''''''''''''"
+process_cmd()
+{
+echo "''''''''''''''''''''''''''''''' $HOSTNAME$1$FEM '''''''''''''''''''''''''''''''''"
 CB=0
 for i in 1 2 4 8; do
-  Play_stapl.py $SP_OPTION i1c $i > /dev/null;
+  CMD="${PSDIR}Play_stapl.py $SP_OPTION i1c $i $PIPE"
+  if [ $VERB -ne "0" ]; then echo "Executing $CMD"; fi
+  eval $CMD
   REG=0
-  (Play_stapl.py -c $SP_OPTION i32 0 i33 0;) | (
+  CMD="${PSDIR}Play_stapl.py -c $SP_OPTION i32 0 i33 0"
+  if [ $VERB -ne "0" ]; then echo "Executing $CMD"; fi
+  eval $CMD | \
     while read line
     do
       #echo "line: $line"
@@ -53,7 +61,9 @@ for i in 1 2 4 8; do
           let "PR2 = ($i33)&16#FFF"
           let "PAR = ($i33>>16)&16#FF"
           let "L0 =  ($i33>>24)&16#FF"
-          printf "FM=$FEMODE PROut=$PROUT CMD=%02x PR2=%03x PAR=%02x L0=%02x " $LAST_CMD $PR2 $PAR $L0
+          let "FEClkCnt = ($i32>>28)&0xF"
+          let "BEClkCnt = ($i33>>12)&0xF"
+          printf "FM=$FEMODE PO=$PROUT CMD=%02x PR2=%03x PAR=%02x L0=%02x FC=%01x BC=%01x " $LAST_CMD $PR2 $PAR $L0 $FEClkCnt $BEClkCnt
           if [ $SIM -eq "1" ]; then printf "Sim $BYPASS, ";
           else 
             if [ $CN -eq "1" ]; then printf "CN, "; fi
@@ -65,7 +75,26 @@ for i in 1 2 4 8; do
       fi
     done
     printf "\n"
-  )
+#  )
   let "CB = $CB + 1"
 done
-echo ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, $HOSTNAME.$1 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+#echo ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, $HOSTNAME$1$FEM ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+}
+
+case "${1:0:1}" in
+  "b") SP_OPTION="-g";FEM="b";;
+  "a")  SP_OPTION="";FEM="a";;
+  *) usage; exit;;
+esac
+
+OPTIND=2        # skip first argument
+while getopts "v:" opt; do
+  #echo "opt=$opt"
+  case $opt in
+    v) VERB=$OPTARG;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+    :)  echo "Option -$OPTARG requires an argument." >&2; exit 1
+esac
+done
+
+process_cmd
