@@ -1,24 +1,30 @@
 #!/bin/bash
 # while-menu-dialog: run control of the FEM
 
+# defaults
+FEM="a"
+CAR="0" #default carrier
+#CAR="" #all
+#GEN_MODE="random" # pseudo random generator
+GEN_MODE="en"   # periodic generator
+GEN_PERIOD="8"  # periodic generator period
+DAQ="OFF"
+#XTRIG=""  	# disable external trigger
+XTRIG="-x -t0"	# enable external trigger and disable internal triggers
+CAPLOG="" 	# minimal logging of data capture
+#CAPLOG="-v"	# extended logging of data capture
+BIAS="50"	# Bias level [V]
+BIAS_STANDBY="25" # Bias standby level [V]
+
 DIALOG_CANCEL=1
 DIALOG_ESC=255
 HEIGHT=0
 WIDTH=0
 
-# defaults
-FEM="a"
-CAR="0" #default carrier
-#CAR="" #all
-#GEN_MODE="random"
-GEN_MODE="en"
-GEN_PERIOD="12"	# generator period
-DAQ="OFF"
-
 display_result() {
   dialog --title "$1" \
     --no-collapse \
-    --msgbox "$result" 0 0
+    --msgbox "$result $comment" 0 0
 }
 
 dialog_pause() {
@@ -38,6 +44,13 @@ while true; do
     --menu "Please select:" $HEIGHT $WIDTH 5 \
     "s" "Start" \
     "o" "Stop" \
+    "e" "Capture data on the ethernet port" \
+    "ew1" "Capture and write data to file system 1"\
+    "ew2" "Capture and write data to file system 2"\
+    "ef" "Finish data capture"\
+    "b" "Turn on Bias"\
+    "bs" "Set Bias to Standby"\
+    "bf" "Turn off Bias"\
     "p" "Pause/Continue" \
     "f" "View FEM Status" \
     "c" "View Carrier Status" \
@@ -57,13 +70,14 @@ while true; do
       exit 1
       ;;
   esac
+  comment=""
   case $selection in
     0 )
       clear
       echo "Program terminated."
       ;;
     s )
-      result=$(./femon.sh $FEM; ./gtm_lkl.sh $FEM -p$GEN_PERIOD -g$GEN_MODE;)
+      result=$(./femon.sh $FEM; ./gtm_lkl.sh $FEM -p$GEN_PERIOD $XTRIG -g$GEN_MODE;)
       display_result "Local generator $GEN_MODE started"
       ;;
     o )
@@ -89,6 +103,37 @@ while true; do
     d )
       result=$(./doall.sh $FEM)
       display_result "Downloading Carriers of FEM$FEM"
+      ;;
+    e )
+      result=$(script -q -c "~/work/MPCEX/dqc.py $CAPLOG" /dev/null > /tmp/dqc.log&)
+      comment="To watch capture progress: tail -f /tmp/dqc.log"
+      display_result "Capture data on ethernet port                    "
+      ;;
+    ew1 )
+      result=$(script -q -c "~/work/MPCEX/dqc.py -w1 $CAPLOG" /dev/null > /tmp/dqc.log&)
+      comment="To watch capture progress: tail -f /tmp/dqc.log"
+      display_result "Capture and write data to file system 1          "
+      ;;
+    ew2 )
+      result=$(script -q -c "~/work/MPCEX/dqc.py -w2 $CAPLOG" /dev/null > /tmp/dqc.log&)
+      comment="To watch capture progress: tail -f /tmp/dqc.log"
+      display_result "Capture and write data to /tmp                   "
+      ;;
+    ef )
+      result=$(killall dqc.py)
+      display_result "Stop data capture"
+      ;;
+    b )
+      result=$( ~/work/spi/dadc_set_bias.sh $BIAS)
+      display_result "Bias On                       "
+      ;;
+    bs )
+      result=$( ~/work/spi/dadc_set_bias.sh $BIAS_STANDBY)
+      display_result "Bias Standby                  "
+      ;;
+    bf )
+      result=$( ~/work/spi/dadc_set_bias.sh 0)
+      display_result "Bias Off"
       ;;
   esac
 done
