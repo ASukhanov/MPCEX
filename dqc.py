@@ -7,12 +7,13 @@ def usage():
   print('  -v: verbose')
   print('  -w1: write to first file system')
   print('  -w2: write to second file system')
+  print('  -nN:	take N events')
 
 # settings
 # two file systems 
 #data_directory = "/tmp/","/tmp" # the same file system
 data_directory = "/mnt/disk1/data/","/mnt/disk2/data/"
-MaxFileSize = 0.1e9
+MaxFileSize = 4.0e9
 HOST = ''   # Symbolic name meaning all available interfaces
 #HOST = '255.255.255.255'
 PORT = 1792 # FEM port
@@ -76,8 +77,11 @@ for o, a in opts:
             usage()
             sys.exit()
         elif o in ("-w", "--write"):
-            writing_enabled = int(a)
-            print('Writing to '+data_directory[writing_enabled-1]+' enabled')
+            if a in ('1','2'):
+              writing_enabled = int(a)
+              print('Writing to '+data_directory[writing_enabled-1]+' enabled')
+            else:
+              assert False, "only -w1 and w2 options allowed"
         elif o in ("-n", "--number"):
             max_events = int(a)
             print("max_events = "+str(max_events))

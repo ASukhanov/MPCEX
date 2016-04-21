@@ -10,9 +10,8 @@ WIDTH=0
 FEM="a"
 CAR="0" #default carrier
 #CAR="" #all
-#GEN_MODE="random"
-GEN_MODE="en"
-GEN_PERIOD="12"	# generator period
+#FILE_CARRIER="" # latest file
+FILE_CARRIER="-f SC1F_v15F.stp"
 
 display_result() {
   dialog --title "$1" \
@@ -61,11 +60,11 @@ while true; do
       display_result "Flash FEM"
       ;;
     3 )
-      result=$(./jtag_flash_carrier.sh $FEM$CAR)
+      result=$(./jtag_flash_carrier.sh $FEM$CAR $FILE_CARRIER)
       display_result "Carrier $FEM$CAR Device Info"
       ;;
     4 )
-      result=$(./jtag_flash_carrier.sh $FEM$CAR)
+      result=$(./jtag_flash_carrier.sh $FEM$CAR $FILE_CARRIER -p)
       display_result "Flash Carrier $FEM$CAR"
       ;;
   esac
