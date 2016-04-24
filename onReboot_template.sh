@@ -29,7 +29,6 @@ echo "GPIO done"
 # Assign FEM IDs (default f0 and f1),
 # they should be changed locally at RPi to be unique.
 # Assume IDs 11..18 for North and 21..23 for South
-cd /home/phnxrc/work/MPCEX
 # Reset FEM and assign FEM ID for FEMa
 /usr/local/bin/Play_stapl.py i10 10000000 0 i23 $FEMIDA
 # | /home/phnxrc/work/MPCEX/splayer_dump.py
