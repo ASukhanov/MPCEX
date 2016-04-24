@@ -9,19 +9,19 @@ CAR="0" #default carrier
 #GEN_MODE="random" # pseudo random generator
 GEN_MODE="en"   # periodic generator
 
-GEN_PERIOD="4"  # generator period
+GEN_PERIOD="2"  # Log2 of generator period, 1: 18KHz, 2: 9KHz
 DAQ="OFF"
 
-XTRIG=""  	# disable external trigger
 #XTRIG="-x -t0"	# enable external trigger and disable internal triggers
 
-#CAPLOG="" 	# minimal logging of data capture
-CAPLOG="-v"	# extended logging of data capture
+#CAPLOG="-v"	# extended logging of data capture
 
 BIAS="100"       # Bias level [V]
 BIAS_STANDBY="50" # Bias standby level [V]
 #BIAS="50"	# Bias level [V]
 #BIAS_STANDBY="25" # Bias standby level [V]
+
+#FEMFAKE="-f" # Test FEM data transfer with fake data
 
 DIALOG_CANCEL=1
 DIALOG_ESC=255
@@ -84,7 +84,7 @@ while true; do
       echo "Program terminated."
       ;;
     s )
-      result=$(./femon.sh $FEM; ./gtm_lkl.sh $FEM -p$GEN_PERIOD $XTRIG -g$GEN_MODE;)
+      result=$(./femon.sh $FEM $FEMFAKE; ./gtm_lkl.sh $FEM -p$GEN_PERIOD $XTRIG -g$GEN_MODE;)
       display_result "Local generator $GEN_MODE started"
       ;;
     o )
