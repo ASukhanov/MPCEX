@@ -39,6 +39,7 @@ CARRIER_OPTIONS="-b000000" # no bypassed modules
 # for SC1F:
 FILE="svx1.stp"
 CARLIST=(0 1)
+SVX_DOWNLOAD_LOG="svx_download.log"
 
 # options for debugging
 #FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master
@@ -74,7 +75,8 @@ echo "executing ./carrier_config.sh ${1:0:1} $CARRIER_OPTIONS -d -p8"
 
 if [ $DOWNLOAD == "1" ]; then
 echo "executing ./svx_download.sh $1 -v0 -f $FILE"
-./svx_download.sh $1 -v0 -f $FILE;  # download the chain;
+date >> $SVX_DOWNLOAD_LOG
+./svx_download.sh $1 -v0 -f $FILE | tee >> $SVX_DOWNLOAD_LOG;  # download the chain;
 #./view_status.sh $1
 ./send_calstrobe_to_carrier.sh ${1:0:1}; # latch the downloading
 SEQUENCER_MODIFIED=1;
