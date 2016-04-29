@@ -1,5 +1,4 @@
 #!/usr/bin/python
-version = "v1 2016-04-06. "
 def usage():
   print('Simple udp receiver. '+version+\
     'usage: '+sys.argv[0]+ ' options')
@@ -8,6 +7,9 @@ def usage():
   print('  -w1: write to first file system')
   print('  -w2: write to second file system')
   print('  -nN:	take N events')
+
+version = "v1 2016-04-06. "
+version = "v2 2026-04-28" # event counter cleared each run
 
 # settings
 # two file systems 
@@ -142,6 +144,7 @@ while 1:
                 expected_length = pktlen
                 print('Run started, evLen= ' + str(pktlen))
                 run_started = 1
+                events=0
                 bytesin = 0.
                 if writing_enabled>0:
                         filename = datetime.datetime.today().strftime("%y%m%d%H%M.dq4")

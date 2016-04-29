@@ -9,10 +9,10 @@ CAR="0" #default carrier
 #GEN_MODE="random" # pseudo random generator
 GEN_MODE="en"   # periodic generator
 
-GEN_PERIOD="2"  # Log2 of generator period, 1: 18KHz, 2: 9KHz
+GEN_PERIOD="12"  # Log2 of generator period, 1: 18KHz, 2: 9KHz, 15: 1Hz
 DAQ="OFF"
 
-#XTRIG="-x -t0"	# enable external trigger and disable internal triggers
+XTRIG="-x -t0"	# enable external trigger and disable internal triggers
 
 #CAPLOG="-v"	# extended logging of data capture
 
@@ -117,11 +117,13 @@ while true; do
       display_result "Capture data on ethernet port                    "
       ;;
     ew1 )
+      killall dqc.py;
       result=$(script -q -c "~/work/MPCEX/dqc.py -w1 $CAPLOG" /dev/null > /tmp/dqc.log&)
       comment="To watch capture progress: tail -f /tmp/dqc.log"
       display_result "Capture and write data to file system 1          "
       ;;
     ew2 )
+      killall dqc.py;
       result=$(script -q -c "~/work/MPCEX/dqc.py -w2 $CAPLOG" /dev/null > /tmp/dqc.log&)
       comment="To watch capture progress: tail -f /tmp/dqc.log"
       display_result "Capture and write data to /tmp                   "
