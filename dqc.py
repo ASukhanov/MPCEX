@@ -7,17 +7,21 @@ def usage():
   print('  -w1: write to first file system')
   print('  -w2: write to second file system')
   print('  -nN:	take N events')
+  print('  -r:  receive raw ethernet packets')
 
-version = "v1 2016-04-06. "
-version = "v2 2026-04-28" # event counter cleared each run
+#version = "v1 2016-04-06. "
+#version = "v2 2016-04-28" # event counter cleared each run
+version = "v3 2016-05-24" # raw ethernet handling
 
 # settings
 # two file systems 
 #data_directory = "/tmp/","/tmp" # the same file system
 data_directory = "/mnt/disk1/data/","/mnt/disk2/data/"
 MaxFileSize = 4.0e9
-HOST = ''   # Symbolic name meaning all available interfaces
+#HOST = ''   # Symbolic name meaning all available interfaces
 #HOST = '255.255.255.255'
+HOST = '192.168.0.72' # optional, hard-coded IP of the FEM
+
 PORT = 1792 # FEM port
 max_events=1000000000
 PACKET_SIZE = 7000
@@ -45,18 +49,19 @@ sfil = None
 prevev=0
 missed_events_since_last_report = 0
 
+raw_ethernet=False
+my_sender = '192.168.0.71'
+
 def report():
   global prevev, missed_events_since_last_report, run_started, sfil
   txtout  = str(difftime)+'s, '
   txtout += hex(evnum)+' ev#'+str(events)+', evLen='+str(pktlen)
-  txtout += ' accepted: '+str((events-prevev)/delta_time)+','
-  txtout += ' produced: '+str((events-prevev+missed_events_since_last_report)/delta_time)+','
-  #txtout += ' nErrLen='+str(nerrlen)+', nErrL1S='+str(nErrL1S)+', nCIDErr='
+  txtout += ' rcvd/s: '+str(float(events-prevev)/float(delta_time))+','
+  txtout += ' prod/s: '+str(float(events-prevev+missed_events_since_last_report)/float(delta_time))+','
   if sfil:
     txtout += ' f'+str(writing_enabled)+':'+str(sfil.tell()/MaxFileSize*100)[:4]+'%'
   prevev = events
   missed_events_since_last_report = 0
-  #txtout += ', bytes in: '+str(bytesin) + ', out: '+str(bytesout)+'kB '
   print(txtout)
   if sfil:
      if sfil.tell()/MaxFileSize > 0.99:
@@ -65,7 +70,7 @@ def report():
           sfil.close()
           run_started = 0
 try:
-  opts,args = getopt.getopt(sys.argv[1:], 'hw:vn:', ["help", "write to disk", "verbose", "n="])
+  opts,args = getopt.getopt(sys.argv[1:], 'hw:vn:r', ["help", "write to disk", "verbose", "n="])
 except getopt.GetoptError as err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -87,12 +92,18 @@ for o, a in opts:
         elif o in ("-n", "--number"):
             max_events = int(a)
             print("max_events = "+str(max_events))
+        elif o in ("-r", "--raw"):
+            raw_ethernet = True
+            print("raw mode is for debugging, requires superuser privilege, the event format in file will be non-standard.")
         else:
             assert False, "unhandled option"
 
 # Datagram (udp) socket
 try :
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    if not raw_ethernet:
+      s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    else:
+      s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
     #print ('Socket created')
 except socket.error, msg :
     print ('Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
@@ -111,22 +122,21 @@ except socket.error , msg:
 
 start = time.time()
 olddifftime = 0
+pakprevnum = 0
 while 1:
     # receive packet, blocking mode
     pktlen, sender = s.recvfrom_into(packet, PACKET_SIZE)
-    '''
     # receive packet non-blocking
-    result = select.select([s],[],[])
-    pktlen, sender = result[0][0].recvfrom_into(packet, PACKET_SIZE)
-    '''
+    #result = select.select([s],[],[])
+    #pktlen, sender = result[0][0].recvfrom_into(packet, PACKET_SIZE)
     if not packet: 
         break
 
     # event received
-    if (sender != sender_prev):
-      sender_prev = sender
-      print('Packet['+str(pktlen)+'] from '+str(sender))
-
+    if not (my_sender in sender):
+      if verbose:
+        print('Packet['+str(pktlen)+'] from '+str(sender))
+      continue
     if pktlen == IDLE_LENGTH:
       if run_started == 1:
         elapsed_sec = time.time() - start
@@ -139,7 +149,6 @@ while 1:
           print(txtout)
           sfil.close()
       continue
-
     if  run_started == 0:
                 expected_length = pktlen
                 print('Run started, evLen= ' + str(pktlen))
@@ -162,7 +171,12 @@ while 1:
 
     events +=1;
     evnum = packet[OFS]*256 + packet[OFS+1]
-    #print('e:'+str(evnum))
+    if raw_ethernet:
+      paknum = packet[OFS+4]*256 + packet[OFS+5]
+      pakmissed = paknum - pakprevnum -1
+      pakprevnum = paknum
+      if pakmissed < 0:
+        pakmissed += 65536 # correct for 16-bit overflow
     if verbose:
       print('l:'+str(pktlen)+' h:'+binascii.hexlify(packet[OFS:OFS+20])
       +' d:'+binascii.hexlify(packet[OFS+20:OFS+30])+' t:'+binascii.hexlify(packet[pktlen-8:pktlen]))
@@ -174,11 +188,11 @@ while 1:
       missed_ev = evnum - prevnum - 1
     prevnum = evnum
     if missed_ev < 0:
-        missed_ev += 65536 # correct for 16-bit overflow
+      missed_ev += 65536 # correct for 16-bit overflow
     missed_events_since_last_report += missed_ev
-
+    if raw_ethernet:
+      missed_events_since_last_report += pakmissed
     difftime = int((time.time() - start))
-    #if difftime/delta_time != olddifftime/delta_time:
     if difftime >= olddifftime + delta_time:
       report()
       olddifftime = difftime
@@ -186,7 +200,6 @@ while 1:
     if sfil and not sfil.closed:
             sfil.write(struct.pack('1i',pktlen)) # adds 5% cpu occupancy
             sfil.write(packet[:pktlen])
-            #bytesout = round(sfil.tell()/1000.,1)
 
     if events >= max_events:
       print('Stopped after '+str(max_events)+' events')
