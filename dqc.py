@@ -43,7 +43,7 @@ delta_time=10
 writing_enabled = 0
 dump_enabled = False
 IDLE_LENGTH=44
-run_started=0
+run_started = False
 sfil = None
 
 prevev=0
@@ -56,6 +56,7 @@ def report():
   global prevev, missed_events_since_last_report, run_started, sfil
   txtout  = str(difftime)+'s, '
   txtout += hex(evnum)+' ev#'+str(events)+', evLen='+str(pktlen)
+  txtout += ' lost: '+str(missed_events_since_last_report)
   txtout += ' rcvd/s: '+str(float(events-prevev)/float(delta_time))+','
   txtout += ' prod/s: '+str(float(events-prevev+missed_events_since_last_report)/float(delta_time))+','
   if sfil:
@@ -68,7 +69,7 @@ def report():
           fpos = sfil.tell()
           print ('Closed '+sfil.name+'['+str(fpos)+']')
           sfil.close()
-          run_started = 0
+          run_started = False
 try:
   opts,args = getopt.getopt(sys.argv[1:], 'hw:vn:r', ["help", "write to disk", "verbose", "n="])
 except getopt.GetoptError as err:
@@ -138,10 +139,10 @@ while 1:
         print('Packet['+str(pktlen)+'] from '+str(sender))
       continue
     if pktlen == IDLE_LENGTH:
-      if run_started == 1:
+      if run_started:
         elapsed_sec = time.time() - start
         print('Run stopped, evLen= ' + str(pktlen))
-        run_started = 0
+        run_started = False
         report()
         if sfil and not sfil.closed:
           fpos = sfil.tell()
@@ -149,25 +150,25 @@ while 1:
           print(txtout)
           sfil.close()
       continue
-    if  run_started == 0:
-                expected_length = pktlen
-                print('Run started, evLen= ' + str(pktlen))
-                run_started = 1
-                events=0
-                bytesin = 0.
-                if writing_enabled>0:
-                        filename = datetime.datetime.today().strftime("%y%m%d%H%M.dq4")
-                        sfil = open(data_directory[writing_enabled-1]+filename,'wb')
-                        if not sfil.closed:
-                                txtout = 'Opened '+sfil.name
-                                print(txtout)
-                start = time.time()
-                olddifftime = 0
-                nErrL1S = 0
-                nErrLPar = 0
-                errcnt = 0
-                nerrlen = 0
-                nEmptyEvents = 0
+    if  not run_started:
+      expected_length = pktlen
+      print('Run started, evLen= ' + str(pktlen))
+      run_started = True
+      events=0
+      bytesin = 0.
+      if writing_enabled>0:
+        filename = datetime.datetime.today().strftime("%y%m%d%H%M.dq4")
+        sfil = open(data_directory[writing_enabled-1]+filename,'wb')
+        if not sfil.closed:
+          txtout = 'Opened '+sfil.name
+          print(txtout)
+        start = time.time()
+        olddifftime = 0
+        nErrL1S = 0
+        nErrLPar = 0
+        errcnt = 0
+        nerrlen = 0
+        nEmptyEvents = 0
 
     events +=1;
     evnum = packet[OFS]*256 + packet[OFS+1]
