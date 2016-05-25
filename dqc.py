@@ -18,9 +18,9 @@ version = "v3 2016-05-24" # raw ethernet handling
 #data_directory = "/tmp/","/tmp" # the same file system
 data_directory = "/mnt/disk1/data/","/mnt/disk2/data/"
 MaxFileSize = 4.0e9
-#HOST = ''   # Symbolic name meaning all available interfaces
+HOST = ''   # Symbolic name meaning all available interfaces
 #HOST = '255.255.255.255'
-HOST = '192.168.0.72' # optional, hard-coded IP of the FEM
+#HOST = '192.168.0.72' # optional, hard-coded IP of the FEM
 
 PORT = 1792 # FEM port
 max_events=1000000000
@@ -134,6 +134,7 @@ while 1:
     if not packet: 
         break
     # event received
+    #print pktlen, sender
     rcvnum +=1
     if not (my_sender in sender):
       if verbose:
