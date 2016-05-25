@@ -124,6 +124,7 @@ except socket.error , msg:
 start = time.time()
 olddifftime = 0
 pakprevnum = 0
+rcvnum=0
 while 1:
     # receive packet, blocking mode
     pktlen, sender = s.recvfrom_into(packet, PACKET_SIZE)
@@ -132,8 +133,8 @@ while 1:
     #pktlen, sender = result[0][0].recvfrom_into(packet, PACKET_SIZE)
     if not packet: 
         break
-
     # event received
+    rcvnum +=1
     if not (my_sender in sender):
       if verbose:
         print('Packet['+str(pktlen)+'] from '+str(sender))
@@ -149,6 +150,11 @@ while 1:
           txtout = 'Closed '+sfil.name+'['+str(fpos)+'] after '+str(round(elapsed_sec,1))+'s'
           print(txtout)
           sfil.close()
+      else: 
+          #print "FEM alive"
+          sys.stdout.write('\rFEM alive '+str(rcvnum)+'\r')
+          sys.stdout.flush()
+          #time.sleep(1)
       continue
     if  not run_started:
       expected_length = pktlen
