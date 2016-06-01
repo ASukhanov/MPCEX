@@ -1,20 +1,20 @@
 #!/bin/bash
 # while-menu-dialog: run control of the FEM
 
-# defaults
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#                   user-defined settings
 FEM="a"
 CAR="0" #default carrier
 #CAR="" #all
 
+XTRIG="-x -t0"  # enable external trigger and disable internal triggers
+
+# The GEN_x setting is effective only if XTRIG is not defined
 #GEN_MODE="random" # pseudo random generator
 GEN_MODE="en"   # periodic generator
+GEN_PERIOD="6"  # Log2 of generator period, 1: 18KHz, 2: 9KHz, 15: 1Hz
 
-GEN_PERIOD="12"  # Log2 of generator period, 1: 18KHz, 2: 9KHz, 15: 1Hz
-DAQ="OFF"
-
-XTRIG="-x -t0"	# enable external trigger and disable internal triggers
-
-#CAPLOG="-v"	# extended logging of data capture
+CAPLOG="-v"	# extended logging of data capture
 
 BIAS="100"       # Bias level [V]
 BIAS_STANDBY="50" # Bias standby level [V]
@@ -22,11 +22,15 @@ BIAS_STANDBY="50" # Bias standby level [V]
 #BIAS_STANDBY="25" # Bias standby level [V]
 
 #FEMFAKE="-f" # Test FEM data transfer with fake data
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 DIALOG_CANCEL=1
 DIALOG_ESC=255
 HEIGHT=0
 WIDTH=0
+
+RUN="stopped"
+DAQ="OFF"
 
 display_result() {
   dialog --title "$1" \
@@ -84,12 +88,23 @@ while true; do
       echo "Program terminated."
       ;;
     s )
-      result=$(./femon.sh $FEM $FEMFAKE; ./gtm_lkl.sh $FEM -p$GEN_PERIOD $XTRIG -g$GEN_MODE;)
-      display_result "Local generator $GEN_MODE started"
+      if [ $RUN == "started" ]
+        then
+          result="Run is already started"
+          display_result "Run is already started";
+        else
+          result=$(./femon.sh $FEM $FEMFAKE; ./gtm_lkl.sh $FEM -p$GEN_PERIOD $XTRIG -g$GEN_MODE;)
+          if [ $XTRIG == "" ]
+            then display_result "Local generator $GEN_MODE started";
+            else display_result "Running from external trigger"; 
+          fi
+          RUN="started"
+        fi
       ;;
     o )
       result=$(./gtm_lkl.sh $FEM -gstop; ./femoff.sh)
-      display_result "Run stopped"
+      RUN="stopped"
+      display_result "Run $RUN"
       ;;
     p )
       if [ $DAQ == "ON" ];

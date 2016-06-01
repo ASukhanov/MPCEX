@@ -68,20 +68,25 @@ esac
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 #	Execute the command
 execmd () {
-case "$GENTYPE" in
-  "en") echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"
-        CMDRUN="3";;
-  "rand") CMDRUN="1"; echo "Random triggering";;
-  "pause") CMDRUN="5";; #bit 18 to disable triggers
-  *)    CMDRUN="5"; GENTYPE="gstop";;
-esac
+
+  case "$GENTYPE" in
+    "en") CMDRUN="3";;
+    "rand") CMDRUN="1";;
+    "pause") CMDRUN="5";; #bit 18 to disable triggers
+    *)    CMDRUN="5"; GENTYPE="gstop";;
+  esac
 
 if [ $ENABLE_EXTERNAL_TRIGGER -ne "0" ]; then
+  echo "External triggering"
   CMD="Play_stapl.py $SP_OPTION i1c 40"
 else
+  if [ $CMDRUN == "3" ];
+    then echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"; fi
+  if [ $CMDRUN == "1" ];
+    then  echo "Random triggering"; fi
   CMD="Play_stapl.py $SP_OPTION i1c 00"
 fi
-echo "Executing cmd: $CMD"
+if [ $VERB -gt "0" ]; then echo "Executing cmd: $CMD"; fi
 eval $CMD >>/dev/null
 
 #let "NTRIGS = $NTRIGS-1"
