@@ -3,7 +3,7 @@
 
 # defaults
 FEM="a"
-CAR="0" #default carrier
+CAR="0" #default carrier board
 #CAR="" #all
 
 #GEN_MODE="random" # pseudo random generator
@@ -20,7 +20,9 @@ BIAS_STANDBY="50" # Bias standby level [V]
 #BIAS="50"	# Bias level [V]
 #BIAS_STANDBY="25" # Bias standby level [V]
 
-#FEMFAKE="-f" # Test FEM data transfer with fake data
+#FEMFAKE="-f" # Fake data from FEM for testing the FEM transmission interface
+
+#TIMESTAMPING="-t" # the 8th word of the header will be replaced with the time stamp
 
 DIALOG_CANCEL=1
 DIALOG_ESC=255
@@ -121,17 +123,17 @@ while true; do
       display_result "Downloading Carriers of FEM$FEM"
       ;;
     e )
-      result=$(script -q -c "~/work/MPCEX/dqc.py $CAPLOG" /dev/null > /tmp/dqc.log&)
+      result=$(script -q -c "~/work/MPCEX/dqc.py $CAPLOG $TIMESTAMPING" /dev/null > /tmp/dqc.log&)
       comment="To watch capture progress: tail -f /tmp/dqc.log"
       display_result "Capture data on ethernet port                    "
       ;;
     ew1 )
-      result=$(script -q -c "~/work/MPCEX/dqc.py -w1 $CAPLOG" /dev/null > /tmp/dqc.log&)
+      result=$(script -q -c "~/work/MPCEX/dqc.py -w1 $CAPLOG $TIMESTAMPING" /dev/null > /tmp/dqc.log&)
       comment="To watch capture progress: tail -f /tmp/dqc.log"
       display_result "Capture and write data to file system 1          "
       ;;
     ew2 )
-      result=$(script -q -c "~/work/MPCEX/dqc.py -w2 $CAPLOG" /dev/null > /tmp/dqc.log&)
+      result=$(script -q -c "~/work/MPCEX/dqc.py -w2 $CAPLOG $TIMESTAMPING" /dev/null > /tmp/dqc.log&)
       comment="To watch capture progress: tail -f /tmp/dqc.log"
       display_result "Capture and write data to /tmp                   "
       ;;

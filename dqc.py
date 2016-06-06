@@ -8,10 +8,12 @@ def usage():
   print('  -w2: write to second file system')
   print('  -nN:	take N events')
   print('  -r:  receive raw ethernet packets')
+  print('  -t:  put 16-bit time stamp in the event header[8]')
 
 #version = "v1 2016-04-06. "
 #version = "v2 2016-04-28" # event counter cleared each run
-version = "v3 2016-05-24" # raw ethernet handling
+#version = "v3 2016-05-24" # raw ethernet handling
+version = "v4 2016-06-06" # -t option 
 
 # settings
 # two file systems 
@@ -45,6 +47,7 @@ dump_enabled = False
 IDLE_LENGTH=44
 run_started = False
 sfil = None
+time_stamping = False
 
 prevev=0
 missed_events_since_last_report = 0
@@ -71,7 +74,7 @@ def report():
           sfil.close()
           run_started = False
 try:
-  opts,args = getopt.getopt(sys.argv[1:], 'hw:vn:r', ["help", "write to disk", "verbose", "n="])
+  opts,args = getopt.getopt(sys.argv[1:], 'hw:vn:rt', ["help", "write to disk", "verbose", "n="])
 except getopt.GetoptError as err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -96,6 +99,9 @@ for o, a in opts:
         elif o in ("-r", "--raw"):
             raw_ethernet = True
             print("raw mode is for debugging, requires superuser privilege, the event format in file will be non-standard.")
+        elif o in ("-t", "--tstamp"):
+            time_stamping = True
+            print("ATTENTION! Time stamping is enabled!")
         else:
             assert False, "unhandled option"
 
@@ -122,6 +128,7 @@ except socket.error , msg:
 #s.setblocking(0)
 
 start = time.time()
+current_time = start
 olddifftime = 0
 pakprevnum = 0
 rcvnum=0
@@ -157,7 +164,7 @@ while 1:
           sys.stdout.flush()
           #time.sleep(1)
       continue
-    if  not run_started:
+    if not run_started:
       expected_length = pktlen
       print('Run started, evLen= ' + str(pktlen))
       run_started = True
@@ -196,17 +203,24 @@ while 1:
       missed_ev = evnum - prevnum - 1
     prevnum = evnum
     if missed_ev < 0:
-      missed_ev += 65536 # correct for 16-bit overflow
+      missed_ev += 65536 # correct the counter for 16-bit overflow
     missed_events_since_last_report += missed_ev
     if raw_ethernet:
       missed_events_since_last_report += pakmissed
-    difftime = int((time.time() - start))
+    current_time = time.time()
+    difftime = int(current_time - start)
     if difftime >= olddifftime + delta_time:
       report()
       olddifftime = difftime
+    if time_stamping:
+      time_stamp = int(current_time)
+      packet[OFS+17] = time_stamp&0xff
+      packet[OFS+16] = (time_stamp>>8)&0xff
+      #print('l:'+str(pktlen)+' h:'+binascii.hexlify(packet[OFS:OFS+20])
+      #+' d:'+binascii.hexlify(packet[OFS+20:OFS+30])+' t:'+binascii.hexlify(packet[pktlen-8:pktlen]))
 
     if sfil and not sfil.closed:
-            sfil.write(struct.pack('1i',pktlen)) # adds 5% cpu occupancy
+            sfil.write(struct.pack('1i',pktlen)) # write out the packet length (this adds 5% of cpu occupancy)
             sfil.write(packet[:pktlen])
 
     if events >= max_events:
