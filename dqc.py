@@ -58,10 +58,10 @@ my_sender = '192.168.0.71'
 def report():
   global prevev, missed_events_since_last_report, run_started, sfil
   txtout  = str(difftime)+'s, '
-  txtout += hex(evnum)+' ev#'+str(events)+', evLen='+str(pktlen)
-  txtout += ' lost: '+str(missed_events_since_last_report)
-  txtout += ' rcvd/s: '+str(float(events-prevev)/float(delta_time))+','
-  txtout += ' prod/s: '+str(float(events-prevev+missed_events_since_last_report)/float(delta_time))+','
+  txtout += 'hev:'+str(evnum)+' ev:'+str(events)+' evLen:'+str(pktlen)
+  txtout += ' lost:'+str(missed_events_since_last_report)
+  txtout += ' rcvd/s:'+str(float(events-prevev)/float(delta_time))
+  txtout += ' prod/s:'+str(float(events-prevev+missed_events_since_last_report)/float(delta_time))+','
   if sfil:
     txtout += ' f'+str(writing_enabled)+':'+str(sfil.tell()/MaxFileSize*100)[:4]+'%'
   prevev = events
