@@ -2,26 +2,28 @@
 # while-menu-dialog: run control of the FEM
 # version v2, 2016-06-07. No need to cd to working directory
 
-# defaults
+#''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#                     defaults
 FEM="a"
 CAR="0" #default carrier board
 #CAR="" #all
 
+XTRIG="-x -t0"  # enable external trigger and disable internal trigger generator
+
+# internal trigger generator setting, effective only if XTRIG is not set
 #GEN_MODE="random" # pseudo random generator
 GEN_MODE="en"   # periodic generator
-
 GEN_PERIOD="15"  # Log2 of generator period, 1: 18KHz, 2: 9KHz
 
-XTRIG="-x -t0"	# enable external trigger and disable internal triggers
-
-CAPLOG="-v"	# extended logging of the data capturing
+#CAPLOG="-v"	# extended logging of the data capturing
 
 BIAS="100"       # Bias level [V]
 BIAS_STANDBY="50" # Bias standby level [V]
 
 #FEMFAKE="-f" # Fake data from FEM for testing the FEM transmission interface
 
-#TIMESTAMPING="-t" # the 8th word of the header will be replaced with the time stamp
+TIMESTAMPING="-t" # the 8th word of the header will be replaced with the time stamp
+#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
 DIALOG_CANCEL=1
 DIALOG_ESC=255
