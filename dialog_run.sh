@@ -32,7 +32,7 @@ RUN="stopped"
 
 WORKDIR="/home/pi/work/"
 FEMDIR="${WORKDIR}MPCEX/"
-SPIDIR="${WORKDIR}SPI/"
+SPIDIR="${WORKDIR}spi/"
 
 display_result() {
   dialog --title "$1" \

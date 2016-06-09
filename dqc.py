@@ -1,6 +1,6 @@
 #!/usr/bin/python
 def usage():
-  print('Simple udp receiver. '+version+\
+  print('UDP receiver of data from MPCEX FEM gigabit port'+version+\
     'usage: '+sys.argv[0]+ ' options')
   print('Options:')
   print('  -v: verbose')
@@ -13,7 +13,8 @@ def usage():
 #version = "v1 2016-04-06. "
 #version = "v2 2016-04-28" # event counter cleared each run
 #version = "v3 2016-05-24" # raw ethernet handling
-version = "v4 2016-06-06" # -t option 
+#version = "v4 2016-06-06" # -t option 
+version = "v5 2016-06-09" # event parity corrected for -t option
 
 # settings
 # two file systems 
@@ -212,13 +213,21 @@ while 1:
     if difftime >= olddifftime + delta_time:
       report()
       olddifftime = difftime
+
     if time_stamping:
       time_stamp = int(current_time)
+      xor_byte0 = packet[OFS+16] # store two bytes for parity correction
+      xor_byte1 = packet[OFS+17]
       packet[OFS+17] = time_stamp&0xff
       packet[OFS+16] = (time_stamp>>8)&0xff
+      # correct the parity word (the last one in the packet)
+      xor_byte0 = xor_byte0 ^ packet[OFS+16]
+      xor_byte1 = xor_byte1 ^ packet[OFS+17]
+      packet[pktlen-2] = packet[pktlen-2] ^ xor_byte0
+      packet[pktlen-1] = packet[pktlen-1] ^ xor_byte1
       #print('l:'+str(pktlen)+' h:'+binascii.hexlify(packet[OFS:OFS+20])
       #+' d:'+binascii.hexlify(packet[OFS+20:OFS+30])+' t:'+binascii.hexlify(packet[pktlen-8:pktlen]))
-
+ 
     if sfil and not sfil.closed:
             sfil.write(struct.pack('1i',pktlen)) # write out the packet length (this adds 5% of cpu occupancy)
             sfil.write(packet[:pktlen])
