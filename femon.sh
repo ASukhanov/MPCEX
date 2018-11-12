@@ -34,10 +34,11 @@ esac
 #echo "FEM=[$FEM]"
 
 # Working  mode
-CSR10=16#50000F08       # standard
+#CSR10=16#50000F08       # standard
+#CSR10=16#50000008      # all disabled, will send only headers
 #CSR10=16#50000F18        # CB1 master
 #CSR10=16#50008F08      # Err_halt, all CB enabled,CB0 master
-#CSR10=16#50000108      # CB0 enabled, CB0 master
+CSR10=16#50000308      # CB0,1 enabled, CB0 master
 #CSR10=16#50000218       # CB0,CB1,CB2,CB3 enabled, CB1 master.
 #CSR10=16#5000071C       # FEMFake CB0,CB1CB2 enabled, CB1 master.
 

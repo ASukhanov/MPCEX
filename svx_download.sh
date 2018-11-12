@@ -19,11 +19,13 @@ download one module on second chain of Fem.b : $0 b1 1
 EOF
 }
 # version #150420	Calstrobe removed, it should be external
+# version v2 2016-04-28 Logging
+
 NOPLAY=0
 
 # CSR10: Local control (10000), All chains enabled (f00), triggers disabled (c0) , BClk (8)
 CSR10_bits_19_00=14fc0
-LOG=/phenixhome/phnxrc/MPCEXFinal/StaplPlayer_log.txt
+LOG="svx_download.log"
 FILE_ALL="svxall_gain_high_drive_low.stp"
 FILE_ONE="svx1.stp"
 FILE=$FILE_ALL
@@ -63,7 +65,10 @@ while getopts ":v:t1f:" opt; do
       exit 1
   esac
 done
-#echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $HOSTNAME ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" >> $LOG
+
+echo "======== $HOSTNAME.$1 ========" >> $LOG
+date >> $LOG
+
 FEM=${1:0:1}
 case "$FEM" in
   "b")
@@ -107,7 +112,7 @@ eval $CMD > /dev/null
 if [ $NOPLAY != "1" ]; then
 CMD="StaplPlayer $SP_OPTION -aTrans $FILE"
 if [ $VERB -ge "2" ]; then echo "Executing: $CMD"; fi
-(eval $CMD;) | (
+(eval $CMD | tee -a $LOG) | (
 ii=$NCHIPS
 while read STR
 do

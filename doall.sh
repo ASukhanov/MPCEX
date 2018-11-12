@@ -34,11 +34,11 @@ SEQUENCER_MODIFIED=0
 FEM_SETTING="Play_stapl.py i10 50000F08" # default. All CBs will be downloaded simultaneously, CB0 - master
 CARRIER_OPTIONS="-b000000" # no bypassed modules
 # for PHENIX:
-FILE="svx6.stp"
-CARLIST=(0 1 2 3)
+#FILE="svx6.stp"   # number of SVX pairs per chain
+#CARLIST=(0 1 2 3) # number of carriers connected
 # for SC1F:
-#FILE="svx1.stp"
-#CARLIST=(0)
+FILE="svx1.stp"
+CARLIST=(0 1 2 3)
 
 # options for debugging
 #FEM_SETTING="Play_stapl.py i10 50000d38"     # CB0,2,3 enabled, CB3 - master

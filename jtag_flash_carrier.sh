@@ -15,10 +15,10 @@ EOF
 # version v2  2016-02-19. Using environment variables, defined in ~/.basrc
 
 VERB="1"
-FILE="CARB_U1-vE1.stp"
 ACTION="DEVICE_INFO"
 
-FILE=$(ls -t /phenixhome/phnxrc/MPCEX/CAR* | head -1)
+#FILE=$(ls -t /phenixhome/phnxrc/MPCEX/CAR* | head -1)
+FILE=$(ls -t /phenixhome/phnxrc/MPCEX/SC1F* | head -1)
 
 OPTIND=2        # skip first argument
 while getopts "v:f:dhpr" opt; do

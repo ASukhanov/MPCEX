@@ -1,12 +1,9 @@
 #!/bin/bash
-# Control of the GTM_local engine in the MPCEX FEM
-# Control of the GTM_local engine in the MPCEX FEM
 usage ()
 {
 cat << EOF
-usage: usage: $0 a/b options gentype [options gentype ...] 
-
 Control of the GTM_local engine on the FEM.a or FEM.b
+usage: usage: $0 a/b options gentype [options gentype ...]
 
 OPTIONS:
   options for periodic triggers:
@@ -14,6 +11,7 @@ OPTIONS:
   -t T	Number of triggers [T=0:15] in train.
   -i I	Interval between triggers (in clocks) in the train [I=0:255]
   -d D	delay of first trigger relative to Abort Gap  pulse [D=0:255]
+  -x    Enable external trigger
   -v    Verbose
 
 GENTYPE:
@@ -28,16 +26,14 @@ EXAMPLE:
   $0 b -g rand -g stop
 EOF
 }
-# the fastest working setting for gigabit ethernet and sending every second event: './gtm_local.sh a osc 4 5 5'
-# note, to drop every second event: 'Play_stapl.py i20 1'
-
-#EXAMPLE="./gtm_local.sh a -g osc -t3; sleep 1; ./gtm_local.sh a stop"
+# Version v2 2016-04-18. Option -x
 
 GENTYPE=""
 DELAY="1"
 NTRIGS="1"
 FREQ="2"
 VERB="0"
+ENABLE_EXTERNAL_TRIGGER="0"
 
 # dqcapture frequencies for L1Stack=5, interval=4
 #		writing		not writing
@@ -72,13 +68,27 @@ esac
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 #	Execute the command
 execmd () {
-case "$GENTYPE" in
-  "en") echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"
-        CMDRUN="3";;
-  "rand") CMDRUN="1"; echo "Random triggering";;
-  "pause") CMDRUN="5";; #bit 18 to disable triggers
-  *)    CMDRUN="5"; GENTYPE="gstop";;
-esac
+
+  case "$GENTYPE" in
+    "en") CMDRUN="3";;
+    "rand") CMDRUN="1";;
+    "pause") CMDRUN="5";; #bit 18 to disable triggers
+    *)    CMDRUN="5"; GENTYPE="gstop";;
+  esac
+
+if [ $ENABLE_EXTERNAL_TRIGGER -ne "0" ]; then
+  echo "External triggering"
+  CMD="Play_stapl.py $SP_OPTION i1c 40"
+else
+  if [ $CMDRUN == "3" ];
+    then echo "Periodic triggering: period=$FREQ, ntrigs=$NTRIGS, interval=$INTERVAL, delay=$DELAY"; fi
+  if [ $CMDRUN == "1" ];
+    then  echo "Random triggering"; fi
+  CMD="Play_stapl.py $SP_OPTION i1c 00"
+fi
+if [ $VERB -gt "0" ]; then echo "Executing cmd: $CMD"; fi
+eval $CMD >>/dev/null
+
 #let "NTRIGS = $NTRIGS-1"
 let "NTRIGS = $NTRIGS" # for firmware version after FEM-v1D2
 let "DRSCAN = $INTERVAL<<20 | $CMDRUN<<16 | $NTRIGS<<12 | $DELAY<<4 | $FREQ"
@@ -112,7 +122,7 @@ fi
 }
 #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 OPTIND=2        # skip first arguments
-while getopts "p:t:i:d:c:g:hv:" opt; do
+while getopts "p:t:i:d:c:g:xhv:" opt; do
   #echo "opt=$opt"
   case $opt in
     p)  let "FREQ =     $OPTARG & 16#F";;
@@ -121,6 +131,7 @@ while getopts "p:t:i:d:c:g:hv:" opt; do
     i)  let "INTERVAL = $OPTARG & 16#FF";;
     g)  GENTYPE=$OPTARG; execmd;;
     v)  VERB=$OPTARG;;
+    x)  ENABLE_EXTERNAL_TRIGGER="1";;
     h)  usage;;
     ?)  echo "ERROR, Illegal option"; exit 1;;
     *)  ;;

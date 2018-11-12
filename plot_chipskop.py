@@ -12,13 +12,13 @@ ofname = '/tmp/' + datetime.datetime.today().strftime("csk_%y%m%d%H%M.wpl")
 
 # uncomment the following line and comment next line to plot locally
 #export_command = '' 
-#export_command = 'scp '+ofname+' andrey@130.199.23.189:/tmp'
-export_command = 'cp -p '+ofname+' /phenixhome/phnxrc/MPCEX/waveforms/'
+export_command = 'scp '+ofname+' andrey@130.199.23.227:/tmp'
+#export_command = 'cp -p '+ofname+' /phenixhome/phnxrc/MPCEX/waveforms/'
 
 import sys
-from matplotlib.widgets import Cursor
+#from matplotlib.widgets import Cursor
 ##import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import subprocess
 import datetime
 import os
