@@ -20,6 +20,9 @@ packet = bytearray(PACKET_SIZE);
 sender_prev=''
 events=0
 delta_time=10
+writing_enabled = False
+dump_enabled = False
+IDLE_LEN=44
 
 prevev=0
 missed_events_since_last_report = 0
@@ -50,6 +53,7 @@ for o, a in opts:
             usage()
             sys.exit()
         elif o in ("-w", "--write"):
+            writing_enabled = True
             print("Writing Enabled")
         elif o in ("-n", "--number"):
             print("Number="+a)
@@ -86,12 +90,47 @@ while 1:
     pktlen, sender = result[0][0].recvfrom_into(packet, PACKET_SIZE)
     '''
     if not packet: 
+                writing_enabled = True
+                print('Writing enabled')
         break
 
     # event received
     if (sender != sender_prev):
       sender_prev = sender
       print('Packet['+str(pktlen)+'] from '+str(sender))
+
+    if pktlen == IDLE_LENGTH
+      if run_started == 1:
+        elapsed_sec = time.time() - start
+        print('Run stopped, evLen= ' + str(pktlen))
+        run_started = 0
+        report()
+        if sfil and not sfil.closed:
+          fpos = sfil.tell()
+          txtout = 'Closed '+sfil.name+'['+str(fpos)+'] after '+str(round(elapsed_sec,1))+'s'
+          print(txtout)
+          sfil.close()
+      continue
+
+    if  run_started == 0:
+                expected_length = msglen
+                print('Run started, evLen= ' + str(msglen))
+                run_started = 1
+                bytesin = 0.
+                if writing_enabled:
+                        filename = datetime.datetime.today().strftime("%y%m%d%H%M.dq4")
+                        sfil = open(data_directory+filename,'wb')
+                        if not sfil.closed:
+                                txtout = 'Opened '+sfil.name
+                                print(txtout)
+                start = time.time()
+                olddifftime = 0
+                nErrL1S = 0
+                nErrLPar = 0
+                errcnt = 0
+                nerrlen = 0
+                nEmptyEvents = 0
+
     events +=1;
     evnum = packet[0]*256 + packet[1]
     #print('e:'+str(evnum))
@@ -109,15 +148,21 @@ while 1:
     missed_events_since_last_report += missed_ev
 
     difftime = int((time.time() - start))
-    '''
-    if sfil and not sfil.closed:
-            bytesout = round(sfil.tell()/1000.,1)
-    else:
-            bytesout = 0.
-    '''
     #if difftime/delta_time != olddifftime/delta_time:
     if difftime >= olddifftime + delta_time:
       report()
       olddifftime = difftime
+
+    if sfil and not sfil.closed:
+            sfil.write(struct.pack('1i',pktlen))
+            sfil.write(msg)
+            #bytesout = round(sfil.tell()/1000.,1)
+
+    if max_events > 0:
+      if events >= max_events:
+        print('Stopped after '+str(max_events))
+        if sfil and not sfil.closed:
+          sfil.close()
+        break
 
 s.close()
